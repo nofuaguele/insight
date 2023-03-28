@@ -1,0 +1,1163 @@
+with table_join as (
+
+select * from [test_environment].[dbo].[1]
+union all 
+select * from [test_environment].[dbo].[2]
+union all 
+select * from [test_environment].[dbo].[3]
+union all
+select * from [test_environment].[dbo].[4]
+union all
+select * from [test_environment].[dbo].[5]
+union all
+select * from [test_environment].[dbo].[6])
+
+select * 
+into [test_environment].[dbo].[test_data]
+from  table_join ;
+
+
+with umc as (
+    select   
+	   a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn consignee]
+      ,a.[extn clearing agent]
+      ,a.[extn shipper]
+      ,a.[extn goods desc]
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	  
+	  ,b.[shipment type] [shipment type2]
+      ,b.[shipment no] [shipment no2]
+      ,b.[actual shipment date] [actual shipment date2]
+      ,b.[extn unit no] [extn unit no2]
+      ,b.[extn unit size type] [extn unit size type2]
+      ,b.[extn shipping line] [extn shipping line2]
+      ,b.[extn port of origin] [extn port of origin2]
+      ,b.[extn voyage id] [extn voyage id2]
+      ,b.[extn consignee] [extn consignee2]
+      ,b.[extn clearing agent] [extn clearing agent2]
+      ,b.[extn shipper] [extn shipper2]
+      ,b.[extn goods desc] [extn goods desc2]
+      ,b.[extn marks and numbers] [extn marks and numbers2]
+      ,b.[num of cartons] [num of cartons2]
+      ,b.[total weight] [total weight2]
+      ,b.[total weight uom] [total weight uom2]
+      ,b.[total volume] [total volume2]
+      ,b.[extn ucd] [extn ucd2]
+      ,b.[extn unit tc] [extn unit tc2]
+      ,b.[extn train operator] [extn train operator2]
+      ,b.[extn train destination] [extn train destination2]
+      ,b.[extn tc trans temp] [extn tc trans temp2]
+      ,b.[extn unit agent] [extn unit agent2]
+      ,b.[extn dangerous goods] [extn dangerous goods2]
+      ,b.[extn load desc] [extn load desc2]
+      ,b.[extn tos no] [extn tos no2]
+      ,b.[extn tranship status] [extn tranship status2]
+  FROM [test_environment].[dbo].[test_data] a 
+  left join  [test_environment].[dbo].[test_data] b
+  on a.[extn unit no] = b.[extn unit no]
+  and a.[extn voyage id] = b.[extn voyage id]
+  and convert(date,a.[actual shipment date]) = convert(date,b.[actual shipment date]))
+
+ select distinct *
+ into [test_environment].[dbo].[um1]
+ from umc
+ where [shipment type] in ('MI-UNIT','ME-UNIT') ;
+
+
+ 	 select  distinct 
+	   a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn consignee]
+      ,a.[extn clearing agent]
+      ,a.[extn shipper]
+      ,a.[extn goods desc]
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	  
+	  	 ----------added colums 
+      ,a.[extn consignee2]
+      ,a.[extn clearing agent2]
+      ,a.[extn shipper2]
+      ,a.[extn goods desc2]	  
+into   [test_environment].[dbo].[um2]
+from   [test_environment].[dbo].[um1] a ;
+
+
+---------------------------------------------------------- 
+
+	 select  distinct 
+	   a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,STRING_AGG(CONVERT(NVARCHAR(max),a.[extn consignee2]), ',') WITHIN GROUP (ORDER BY [extn consignee2] ) AS [extn consignee] 
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	  	  	  
+into  [test_environment].[dbo].[um3]
+from  [test_environment].[dbo].[um2] a 
+group by  a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	;
+
+
+
+
+
+	 select  distinct 
+	   a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+   ---   ,a.[actual delivery date]
+   ---   ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,STRING_AGG(CONVERT(NVARCHAR(max),a.[extn clearing agent2]), ',') WITHIN GROUP (ORDER BY [extn clearing agent2] ) AS [extn clearing agent] 
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	  	  	  
+into [test_environment].[dbo].[um4]
+from [test_environment].[dbo].[um2] a 
+group by  a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+     --- ,a.[actual delivery date]
+     --- ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	;
+
+------------------------------------------------------------------------------------
+
+
+	 select  distinct 
+	   a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+    ---  ,a.[actual delivery date]
+     --- ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,STRING_AGG(CONVERT(NVARCHAR(max),a.[extn shipper2]), ',') WITHIN GROUP (ORDER BY [extn shipper2] ) AS [extn shipper] 
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	  	  	  
+into [test_environment].[dbo].[um5]
+from  [test_environment].[dbo].[um2] a 
+group by  a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+     --- ,a.[actual delivery date]
+     --- ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	;
+
+-------------------------------------------------------------------------------   
+
+ select  distinct 
+	   a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+     ---- ,a.[actual delivery date]
+    ---  ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,STRING_AGG(CONVERT(NVARCHAR(max),a.[extn goods desc2]), ',') WITHIN GROUP (ORDER BY [extn goods desc2] ) AS [extn goods desc] 
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	  	  	  
+into  [test_environment].[dbo].[um6]
+from   [test_environment].[dbo].[um2] a 
+group by  a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+     -- ,a.[actual delivery date]
+     --- ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	;
+	 
+-------------------------------------------------------------------------- collate
+
+       select   
+	   a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+    ---  ,a.[actual delivery date]
+     --- ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn consignee] 
+	  ,b.[extn clearing agent]
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	
+into [test_environment].[dbo].[t1]
+from [test_environment].[dbo].[um3] a 
+left join [test_environment].[dbo].[um4] b
+on a.[extn unit no] = b.[extn unit no]
+and   a.[extn voyage id] = b.[extn voyage id]
+and   a.[shipment type] = b.[shipment type]
+and a.[shipment no] = b.[shipment no]
+and convert(date,a.[actual shipment date]) = convert(date,b.[actual shipment date]) ;
+----------
+
+
+  select   
+	   a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+    ---  ,a.[actual delivery date]
+    ---  ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn shipper] 
+	  ,b.[extn goods desc]	
+      ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	
+into [test_environment].[dbo].[t2]
+from [test_environment].[dbo].[um5] a 
+left join [test_environment].[dbo].[um6] b
+on a.[extn unit no] = b.[extn unit no]
+and   a.[extn voyage id] = b.[extn voyage id]
+and   a.[shipment type] = b.[shipment type]
+and a.[shipment no] = b.[shipment no]
+and convert(date,a.[actual shipment date]) = convert(date,b.[actual shipment date]) ;
+
+
+----------------------------------------------------------------------------------------------
+-----add all tables
+
+select 
+       a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+    ---  ,a.[actual delivery date]
+    ---  ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+      ,a.[extn voyage id]
+      ,a.[extn consignee] 
+	  ,a.[extn clearing agent]
+	  ,b.[extn shipper] 
+	  ,b.[extn goods desc]	
+	  ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	   
+into [test_environment].[dbo].[um7]
+from [test_environment].[dbo].[t1] a 
+left join [test_environment].[dbo].[t2] b
+on a.[extn unit no] = b.[extn unit no]
+and   a.[extn voyage id] = b.[extn voyage id]
+and   a.[shipment type] = b.[shipment type]
+and a.[shipment no] = b.[shipment no]
+and convert(date,a.[actual shipment date]) = convert(date,b.[actual shipment date]);
+
+
+--------------------------------------------------------------------------------------------------------------------
+SELECT distinct
+       a.[shipment type]
+      ,a.[shipment no]
+      ,a.[actual shipment date]
+    ---  ,a.[actual delivery date]
+    ---  ,a.[actual delivery date1]
+      ,a.[extn unit no]
+      ,a.[extn unit size type]
+      ,a.[extn shipping line]
+      ,a.[extn port of origin]
+	  ,b.[Place]
+      ,b.[Country]
+      ,a.[extn voyage id]
+      ,a.[extn consignee] 
+	  ,a.[extn clearing agent]
+	  ,a.[extn shipper] 
+	  ,a.[extn goods desc]	
+	  ,a.[extn marks and numbers]
+      ,a.[num of cartons]
+      ,a.[total weight]
+      ,a.[total weight uom]
+      ,a.[total volume]
+      ,a.[extn ucd]
+      ,a.[extn unit tc]
+      ,a.[extn train operator]
+      ,a.[extn train destination]
+      ,a.[extn tc trans temp]
+      ,a.[extn unit agent]
+      ,a.[extn dangerous goods]
+      ,a.[extn load desc]
+      ,a.[extn tos no]
+      ,a.[extn tranship status]	  
+	 ,case when  [shipment type] = 'ME-UNIT' then 'EXPORT' else 'IMPORT' end  [type]
+	 ,case when  (SUBSTRING([extn voyage id],1,2))  = 'SC' then 'SOUTHAMPTON' else 'LONDON GATEWAY' end [port] 
+     ,case when  [extn tc trans temp] is null then 'DRY CARGO'  else 'REEFER' end [box_type]
+  into  [test_environment].[dbo].[um8]
+  FROM [test_environment].[dbo].[um7]  a 
+  left  join [Project_Insights].[dbo].[port]  b
+  on UPPER(a.[extn port of origin]) = UPPER(b.[unloc])  ;
+
+
+SELECT 
+       [shipment type]
+      ,[shipment no]
+      ,[actual shipment date]
+    ----  ,[actual delivery date]
+    ---  ,[actual delivery date1]
+      ,[extn unit no]
+      ,[extn unit size type]
+      ,[extn shipping line]
+      ,[extn port of origin]
+	  ,[Place]
+      ,[Country]
+      ,[extn voyage id]
+      ,[extn consignee] 
+	  ,[extn clearing agent]
+	  ,[extn shipper] 
+	  ,[extn goods desc]
+	  ,[extn marks and numbers]
+      ,[num of cartons]
+      ,[total weight]
+      ,[total weight uom]
+      ,[total volume]
+      ,[extn ucd]
+      ,[extn unit tc]
+      ,[extn train operator]
+      ,[extn train destination]
+      ,[extn tc trans temp]
+      ,[extn unit agent]
+      ,[extn dangerous goods]
+      ,[extn load desc]
+      ,[extn tos no]
+      ,[extn tranship status]	  
+	  ,[type]
+	  ,[port] 
+      ,[box_type]
+	----  ,[SERVICE]
+    -----  ,[LINE]
+	  , case when [extn unit size type] like '1%' then 0.5
+      when [extn unit size type] like '2%' then 1
+	  when [extn unit size type] like '3%' then 1.5
+	  when [extn unit size type] like '4%' then 2
+	  when [extn unit size type] like '9%' then 2.25 
+	  when upper([extn unit size type]) like 'L%' then 2.25 
+	  else 2.25 end [TEU]
+ into [test_environment].[dbo].[um9]
+ from [test_environment].[dbo].[um8];
+ 
+ ------------------------------------------------------
+  SELECT 
+       [shipment type]
+      ,[shipment no]
+      ,[actual shipment date]
+  ---    ,[actual delivery date]
+    ---  ,[actual delivery date1]
+      ,[extn unit no]
+      ,[extn unit size type]
+      ,[extn shipping line]
+      ,[extn port of origin]
+	  ,[Place]
+      ,[Country]
+      ,[extn voyage id]
+      ,[extn consignee] 
+	  ,[extn clearing agent]
+	  ,[extn shipper] 
+	  ,[extn goods desc]
+	  ,case
+		when lower([extn goods desc]) like '%mandarin%'  or  lower([extn goods desc]) like '%orange%'  or lower([extn goods desc]) like '%lemons%' or ([extn goods desc]) like '1872 BOXES OF FRESH NADORCOTT' or
+	([extn goods desc]) like 'CITRUS FRUIT, PREPARED OR PRES' or ([extn goods desc]) like 'CLEMENTINES, WILKINGS AND SIMI' or ([extn goods desc]) like 'FRESH CLEMENTINE' or ([extn goods desc]) like 'FRESH OR DRIED CITRUS FRUIT (E' 
+	or ([extn goods desc]) like 'FRESH OR DRIED CLEMENTINES' or ([extn goods desc]) like 'FRESH POMELO' or ([extn goods desc]) like 'FROZEN CALAMANSI FRUIT (PHILIPPINE BABY LIME)' or ([extn goods desc]) like 'GREEN SKIN POMELO' then 'CITRUS FRUIT' 	
+	when lower([extn goods desc]) like '%fish%' or lower([extn goods desc]) like '%cod%' or  lower([extn goods desc]) like '%tilapia%'  or lower([extn goods desc]) like '%frozen%baim%' 
+	or lower([extn goods desc]) like '%pollock%' or lower([extn goods desc]) like '%haddock%' or lower([extn goods desc]) like '%frozen%tuna'  or lower([extn goods desc]) like '%frozen%squid%'    or lower([extn goods desc]) like '%seafood%' 
+	or lower([extn goods desc]) like '%shrimp%'  or lower([extn goods desc]) like '%prawn%' or lower([extn goods desc]) like '%squid%' or lower([extn goods desc]) like '%lobster%'  or lower([extn goods desc]) like '%grass%carp%' 
+	or lower([extn goods desc]) like '%trout%' or lower([extn goods desc]) like '%basa%' or lower([extn goods desc]) like '%eel%'  or lower([extn goods desc]) like '%crab%'  or lower([extn goods desc]) like '%mackerel%' 
+	or lower([extn goods desc]) like '%goby%' or lower([extn goods desc]) like '%salmon%'  or lower([extn goods desc]) like '%calamari%'  or lower([extn goods desc]) like '%seaspray%'  or lower([extn goods desc]) like '%anchovy%'  
+	or lower([extn goods desc]) like '%muelleri%' or lower([extn goods desc]) like '%pad%thai%' or lower([extn goods desc]) like '%pangasius%' or lower([extn goods desc]) like '%herring%' or lower([extn goods desc]) like '%scallop%' 
+	or lower([extn goods desc]) like '%hake%' or lower([extn goods desc]) like '%scad%' or lower([extn goods desc]) like '%red%tailed%' or lower([extn goods desc]) like '%tinfoil%barb%'   or lower([extn goods desc]) like '%vannamei%'  
+	or lower([extn goods desc]) like '%tengra%' or lower([extn goods desc]) like '%sushi%'  or lower([extn goods desc]) like '%surimi%' or lower([extn goods desc]) like '%sockeye%'  or lower([extn goods desc]) like '%silver%barb%' 
+	 or lower([extn goods desc]) like '%seafood'  or lower([extn goods desc]) like '%seadood' or lower([extn goods desc]) like '%scampi%' or lower([extn goods desc]) like '%tuna%' or lower([extn goods desc]) like '%black%tiger%' 
+	 or lower([extn goods desc]) like '%raw%pd%tail%'   or lower([extn goods desc]) like '%pollack%' or ([extn goods desc]) like '1. FROZEN KOI CLEAN' or ([extn goods desc]) like '4. FROZEN BLACK POMFRET' 
+	 or ([extn goods desc]) like '1. FROZEN KOI CLEAN' or ([extn goods desc]) like '4. FROZEN BLACK POMFRET ,' or ([extn goods desc]) like '5 FROZEN SHOL WHOLE ( GUTTED & SCALLED SNAKEHEAD) (HS 03032900)' 
+	 or ([extn goods desc]) like '5. FROZEN WHOLE CLEANED MULLET.' or ([extn goods desc]) like '6 FROZEN RED TAIL BARB (HS 03032900)' or ([extn goods desc]) like '6. FROZEN WHOLE CLEANED GOLDEN THREADFIN.' or ([extn goods desc]) like 'CAMARONES'
+	or ([extn goods desc]) like 'CAPELIN' or ([extn goods desc]) like 'CLIMBING PERCH' or ([extn goods desc]) like 'CRUSTACEANS' or ([extn goods desc]) like 'Crustaceans, nesoi, prepared or preserved' 
+	or ([extn goods desc]) like 'CRUSTACEANS, WHETHER IN SHELL' or ([extn goods desc]) like 'DRIED YELLOW STRIPE TREVALLY' or ([extn goods desc]) like 'FFROZEN GOLDEN POMFRET(TRACHINOTUS BLOCHII)' or ([extn goods desc]) like 'FROZEN APOCRYPTES'
+	or ([extn goods desc]) like 'FROZEN ASC RAW PIN DEVEINED WHITE' or ([extn goods desc]) like 'FROZEN AYER GUTTED' or ([extn goods desc]) like 'FROZEN BARRAMUNDI HEADLESS (LATES CALCARIFER)' or ([extn goods desc]) like 'FROZEN BLACK POMFRET WR'
+	or ([extn goods desc]) like 'FROZEN BLACK POMFRET WR (PARASTRO MATEUS NIGER)' or ([extn goods desc]) like 'FROZEN BOAL GUTTED' or ([extn goods desc]) like 'FROZEN BOAL GUTTED FROZEN BACHA' 
+	or ([extn goods desc]) like 'FROZEN BOILED WHITE CLAM WHOLE SHELL (MERETRIX LYRATA)' or ([extn goods desc]) like 'FROZEN COOKED WHOLE WHITE CLAM (MERETRIX LYRATA)' or ([extn goods desc]) like 'FROZEN EMPEROR WGS' 
+	or ([extn goods desc]) like 'FROZEN EMPEROR WGS (LETHRINUS LENTJAN)' or ([extn goods desc]) like 'FROZEN FILLETS OF ALASKA POLLA' or ([extn goods desc]) like 'FROZEN FILLETS OF PACIFIC SALM' or ([extn goods desc]) like 'FROZEN FULLY COOKED WHOLE WHITE CLAM SHELL ON'
+	or ([extn goods desc]) like 'FROZEN GOLDEN POMFRET (XENOBRAMA MICROLEPIS)' or ([extn goods desc]) like 'FROZEN GOLDEN POMFRET(TRACHINOTUS BLOCHII)' or ([extn goods desc]) like 'FROZEN GOURAMI HEADLESS CLEANED KHOLISHA HEADLESS CLEANED'
+	or ([extn goods desc]) like 'FROZEN GREY MULLET (BATA) WHOLE CLEAN' or ([extn goods desc]) like 'FROZEN HEADLESS SNAKESKIN GOURAMI' or ([extn goods desc]) like 'FROZEN HEAD-ON SEA TIGER' or ([extn goods desc]) like 'FROZEN HEAD-ON SEA WHITE'
+	or ([extn goods desc]) like 'FROZEN KESKI' or ([extn goods desc]) like 'FROZEN KESKI WHOLE' or ([extn goods desc]) like 'FROZEN KOI CLEAN FROZEN KOI WHOLE ROUND ETC' or ([extn goods desc]) like 'FROZEN KORAL' or ([extn goods desc]) like 'FROZEN OCTOPUS (OCTOPUS SPP.)'
+	or ([extn goods desc]) like 'FROZEN OCTOPUS DOUGH BALL' or ([extn goods desc]) like 'FROZEN OCTOPUS WC' or ([extn goods desc]) like 'FROZEN OCTOPUS WHOLE CLENAED' or ([extn goods desc]) like 'FROZEN OYSTER' or ([extn goods desc]) like 'MOLLUSCS : CLAMS, COCKLES AND'
+	or ([extn goods desc]) like 'MOLLUSCS : OCTOPUS' or ([extn goods desc]) like 'FROZEN PABDA WHOLE' or ([extn goods desc]) like 'HEADLESS PPV T-OFF PRE COOKED'  then 'SEAFOOD' 
+	when lower([extn goods desc]) like '%sweet%potato%' or lower([extn goods desc]) like '%fresh%sweet%pota%' or lower([extn goods desc]) like '%yam%' or ([extn goods desc]) like '500 KILO SMALL 100-350G BULK BINS SWEET POTAOTES' or
+	([extn goods desc]) like '6 KILO L1 300-450 G SWEET POTOATES' then 'SWEET POTATOES' 
+	when lower([extn goods desc]) like '%sulphur%' or lower([extn goods desc]) like '%paint%' or lower([extn goods desc]) like '%butyl%' or lower([extn goods desc]) like '%chemical%'  or lower([extn goods desc]) like '%feed%additives%'
+	or lower([extn goods desc]) like '%animal%feed%' or lower([extn goods desc]) like '%animal%food%'  or lower([extn goods desc]) like '%wiser%shield%' or lower([extn goods desc]) like '%wannate%' 
+	or lower([extn goods desc]) like '%urea%zh%'  or lower([extn goods desc]) like '%acid%' or lower([extn goods desc]) like '%vylon%' or lower([extn goods desc]) like '%w1428%' 
+	or lower([extn goods desc]) like '%vinyl%' or lower([extn goods desc]) like '%corrosive%' or lower([extn goods desc]) like '%urethane%' or lower([extn goods desc]) like '%un%1%'  
+	or lower([extn goods desc]) like '%un%2%' or lower([extn goods desc]) like '%un%3%'  or lower([extn goods desc]) like '%un%3%' or lower([extn goods desc]) like '%hydroxide%' or lower([extn goods desc]) like '%methyl%'  
+	or lower([extn goods desc]) like '%non haz%' or lower([extn goods desc]) like '%cyanate%' or lower([extn goods desc]) like '%thereon%' or lower([extn goods desc]) like '%sweetening%compound%' 
+	or lower([extn goods desc]) like '%bicarbonate%'  or lower([extn goods desc]) like '%slurry%'  or lower([extn goods desc]) like '%shellac%' or lower([extn goods desc]) like '%polyox%' or lower([extn goods desc]) like '%resin%' 
+	 or lower([extn goods desc]) like '%reagent%veterinarian%' or lower([extn goods desc]) like '%propylene%'  or lower([extn goods desc]) like '%polysulphide%'  or lower([extn goods desc]) like '%polyphenyl%' 
+	  or lower([extn goods desc]) like '%polymers%'    or lower([extn goods desc]) like '%polymers%'  or lower([extn goods desc]) like '%polyeth%'   or lower([extn goods desc]) like '%fertilizer%' 
+	  or lower([extn goods desc]) like '%pentachloro%'  or lower([extn goods desc]) like '%o-phtha%'  or lower([extn goods desc]) like '%opacifying%prep%' or lower([extn goods desc]) like '%liquid%latex%' 
+	  or lower([extn goods desc]) like '%isopropanol%' or ([extn goods desc]) like '18 PALLET (36 PACKAGES) OF REGRIND SURLYN 600 KGS X 36 PACKAGES' or ([extn goods desc]) like '33% HYDROGEN BROMIDE' or ([extn goods desc]) like '4-CHLORO-5-FLUORO-6-'
+	or ([extn goods desc]) like 'AZAMETHIPHOS WP-50 AZASURE' or ([extn goods desc]) like 'AZAMETHIPHOS WP-50;AZASURE' or ([extn goods desc]) like 'CEFTIOFUR HYDROCHLORIDE' or ([extn goods desc]) like 'CHEMITYLEN MS-246' or ([extn goods desc]) like 'COCAMIDOPROPYL PG-DIMONIUM CHRLORIDE PHOSPHATE' or ([extn goods desc]) like 'CUPRIC SULPHATE' or ([extn goods desc]) like 'DICHLORO PYRIMIDINE' 
+	or ([extn goods desc]) like 'DIPHENYL METHANE DIISCOYANATE' or ([extn goods desc]) like 'DISPERSE DYES' or ([extn goods desc]) like 'DISUCCINIMIDYL CARBONATE' or ([extn goods desc]) like 'EDTA (DISODIUM SALT, DIHYDRATE)' 
+	or ([extn goods desc]) like 'EDTA DISODIUM SALT, DIHYDRATE' or ([extn goods desc]) like 'ENZYMES AND PREPARED ENZYMES,' or ([extn goods desc]) like 'ETHYL -2-CYANOACRYLATE MONOMER' or ([extn goods desc]) like 'ETHYL CYANOACRYLATE'
+	or ([extn goods desc]) like 'FLUORINATED, BROMINATED OR IOD' or ([extn goods desc]) like 'FLUOROPOLYMES' or ([extn goods desc]) like 'GEOGARD LSA / D181 HTS 382499 X20210305794347' or ([extn goods desc]) like 'GLUCOSE OXIDASE'
+	or ([extn goods desc]) like 'GLUCOSE OXIDASE%AMANO%LG%' or ([extn goods desc]) like 'HYDROGEN BROMIDE' or ([extn goods desc]) like 'NITRILE-FUNCTION COMPOUNDS (EX' or ([extn goods desc]) like 'NOVOPRIME RED' 
+	or ([extn goods desc]) like 'HIGH INDEX MONOMER' or ([extn goods desc]) like 'MALEIC ANHYDRIDE'  then 'CHEMICALS'
+	when lower([extn goods desc]) like '%confection%' or lower([extn goods desc]) like '%biscuit%' or lower([extn goods desc]) like '%brownies%' or lower([extn goods desc]) like '%dessert%' or lower([extn goods desc]) like '%candy%'
+	or lower([extn goods desc]) like '%choco%' or lower([extn goods desc]) like '%ice%cream%' or  lower([extn goods desc]) like '%yoghurt%' or  lower([extn goods desc]) like '%tim%tams%'  
+	or  lower([extn goods desc]) like '%timbit%' or  lower([extn goods desc]) like '%cinnamon%rolls%'    or  lower([extn goods desc]) like '%sugar%coated%mixed%fruit%'  or  lower([extn goods desc]) like '%sugar%coated%lotus%seed%'  
+	or  lower([extn goods desc]) like '%hot%choc%heart%'  or  lower([extn goods desc]) like '%nutrageous%'   or  lower([extn goods desc]) like '%reese%'  or  lower([extn goods desc]) like '%kit%kat%'  or ([extn goods desc]) like 'BROWNIE TUB' 
+	 or  lower([extn goods desc]) like '%cancy%' or lower([extn goods desc]) like '%banana%chips%' or ([extn goods desc]) like 'HS 2 BROWNIE TUB' or ([extn goods desc]) like 'HS 2 BROWNIE TUB 6X1.36KG'
+	 or ([extn goods desc]) like '265G CADBURYS FAVOURITES' or ([extn goods desc]) like 'HS 2 BROWNIE TUB 6X1.36KG UK' or ([extn goods desc]) like 'MINI DONUT KIT WITH M%MS' or ([extn goods desc]) like 'NUTELLA CREPE SKILLET'
+	 or ([extn goods desc]) like '479 BOXES PB203 OAT 43% DROPS 20KG FREIGHT PREPAID CONTAIN: 10 PACKAGES (479 BOXES) 479 BOXES PB203 OAT 4 3% DROPS 20KG HTS: 1806.20 +18 INVOICE: 302-685728 - GN1 NET WEIGHT: 9 ,580.00 KG'
+	 or ([extn goods desc]) like 'GINORMOUS CHOC. CHIP CD BITE, GINOMOUS MUDDY BEAR' or ([extn goods desc]) like 'EASTER COOKIE POP 50G' or ([extn goods desc]) like 'DECORATE YOUR OWN CHOC EGG'
+ or ([extn goods desc]) like 
+'DARK SANTANDER FREIGHT PREPAID CONTAIN: 20 PACKAGES (1.231 BOXES) 90 BOXES D108 DARK SANTANDER 65% 2,5KG EUR 90 BOXES D122 LUK1906 SAN MARTIN72% 2,5KG EUR 50 BOXES D122 LUK1906 SAN MARTIN72% 20KGEUR 150 BOXES D201 MISTERIO 20 KG EUR 70 BOXES G502 DARK CHO'
+ then 'CONFECTIONS AND CHOCOLATE' 
+	when lower([extn goods desc]) like '%pharma%' or lower([extn goods desc]) like '%medical%' or lower([extn goods desc]) like '%systane%' or lower([extn goods desc]) like '%ibuprofen%'
+	or lower([extn goods desc]) like '%metform%' or lower([extn goods desc]) like '%blood%glucose%' or lower([extn goods desc]) like '%capsule%' 
+	or lower([extn goods desc]) like '%cellulose%'   or lower([extn goods desc]) like '%tablet%' or lower([extn goods desc]) like '%paracetamol%' or lower([extn goods desc]) like '%test%strips%' 
+	or lower([extn goods desc]) like '%adhesive%' or lower([extn goods desc]) like '%bovine%serum%'  or lower([extn goods desc]) like '%amoxicillin%'  or lower([extn goods desc]) like '%amlodipine%' 
+	or lower([extn goods desc]) like '%amsafe%pre%' or lower([extn goods desc]) like '%amylase%' or lower([extn goods desc]) like '%analyzer%' or lower([extn goods desc]) like '%anavue%'
+	or lower([extn goods desc]) like '%animal%pharma%' 	or lower([extn goods desc]) like '%penicillin%'  	or lower([extn goods desc]) like '%medicaments%' or lower([extn goods desc]) like '%medicine%' 
+	or lower([extn goods desc]) like '%zopiclone%' or lower([extn goods desc]) like '%vitamin%'  or lower([extn goods desc]) like '%viscopaste%'   or lower([extn goods desc]) like '%ventolin%'
+	or lower([extn goods desc]) like '%reagent%strips%' or lower([extn goods desc]) like '%trusopt%'  or lower([extn goods desc]) like '%trazodone%' or lower([extn goods desc]) like '%tote%hop%extract%' 
+	or lower([extn goods desc]) like '%caresen%' or lower([extn goods desc]) like '%syringe%'  or lower([extn goods desc]) like '%tabs%'  or lower([extn goods desc]) like '%suk01%' 
+	 or lower([extn goods desc]) like '%whitening%'    or lower([extn goods desc]) like '%novopen%echo%'  or lower([extn goods desc]) like '%needles,catheters%'  or lower([extn goods desc]) like '%valesteramide%' 
+	 or lower([extn goods desc]) like '%slac%=%' or lower([extn goods desc]) like '%simvastatin%' or lower([extn goods desc]) like '%sertraline%' 
+	 or lower([extn goods desc]) like '%pain%relief%'  or lower([extn goods desc]) like '%sal%hfa%mdi%' or lower([extn goods desc]) like '%rosuvastatin%' or lower([extn goods desc]) like '%rifamycin%'   
+	 or lower([extn goods desc]) like '%protein%concentrates%'  or lower([extn goods desc]) like '%propranolol%'  or lower([extn goods desc]) like '%pregabalin%' or lower([extn goods desc]) like '%pennsaid%topical%'   
+	 or lower([extn goods desc]) like '%pedometer%'   or lower([extn goods desc]) like '%packs%of%histec%'  or lower([extn goods desc]) like '%blood%' or lower([extn goods desc]) like '%omega%softgel%'  
+	 or lower([extn goods desc]) like '%levetirace%'  or lower([extn goods desc]) like '%lancet%' or lower([extn goods desc]) like '%lamotrigine%'  or lower([extn goods desc]) like '%jelonet%'   
+	 or ([extn goods desc]) like '204470 CARTONS OF LORATADINE 10MG' or ([extn goods desc]) like 'ATOMIZER' or ([extn goods desc]) like 'ATOMIZER DEVICE' or ([extn goods desc]) like 'ATOMIZER, PART OF ATOMISER'
+	or ([extn goods desc]) like 'ATORVASTATIN FILM-COATED' or ([extn goods desc]) like 'ATORVASTATIN FILM-COATED T ABL' or ([extn goods desc]) like 'ATORVASTATION' or ([extn goods desc]) like 'BACTIGRAS' 
+	or ([extn goods desc]) like 'BEDSIDE FILTRATION SET' or ([extn goods desc]) like 'BETAHISTINE' or ([extn goods desc]) like 'BIOGEL SURGEON' or ([extn goods desc]) like 'BUMETANIDE;ENTACAPONE' or ([extn goods desc]) like 'CARMELLOSE SODIUM'
+	or ([extn goods desc]) like 'CETIRIZINE HCL 10MG' or ([extn goods desc]) like 'CHLORAPREP' or ([extn goods desc]) like 'CINNARIZINE' or ([extn goods desc]) like 'CLARITHROMYCIN 500MG FC' or ([extn goods desc]) like 'CONDOM' 
+	or ([extn goods desc]) like 'CONSUMER HEALTHCARE' or ([extn goods desc]) like 'CONTAINING CORTICOSTEROID HORMONES, THEIR DERIVATIVES OR STR' or ([extn goods desc]) like 'CYANOCOBALAMIN 50 MCG' or ([extn goods desc]) like 'DESFLURANE FOR INHALATION'
+	or ([extn goods desc]) like 'DIAGEMET XL 500 MG GB' or ([extn goods desc]) like 'DIAGEMET XL 500 MG GB (2 X 14%S)' or ([extn goods desc]) like 'DIAGNOSTIC OR LABORATORY REAGE' or ([extn goods desc]) like 'DIAGNOSTIC TESTS' 
+	or ([extn goods desc]) like 'DULOX CAPS' or ([extn goods desc]) like 'DULOXETINE 30 MG CAPS' or ([extn goods desc]) like 'DULOXETINE 60 MG CAPS' or ([extn goods desc]) like 'DULOXETINE 60 MG CAPS, RITONAVIR 50 MG, LOPINAVIR 200 MG'
+	or ([extn goods desc]) like 'DUR,GB,2IN1SENSUAL200MLX3X'  or ([extn goods desc]) like 'EU SUDOCREM' or ([extn goods desc]) like 'FLIXONASE NASULES' or ([extn goods desc]) like 'FLIXONASE NASULES 400MCG' 
+	or ([extn goods desc]) like 'FLIXOTIDE 0.5MG/2ML 10S FLOW WRAP' or ([extn goods desc]) like 'FLIXOTIDE 0.5MG/2ML 10S FLOW WRAP FLIXONASE NASULES 400MCG'  or ([extn goods desc]) like 'FLURBIPROFEN POULTICE' or ([extn goods desc]) like 'FOOT CREAM'
+	or ([extn goods desc]) like 'GABAPENTIN GLENMARK' or ([extn goods desc]) like 'GABAPENTIN TILLOMED' or ([extn goods desc]) like 'GABAPENTIN TILLOMED 300MG HARD' or ([extn goods desc]) like 'GLUCOSE METER'
+	or ([extn goods desc]) like 'Immunological products, put up in measured doses or in forms or packin gs for retail sale'  or ([extn goods desc]) like 'MEDICATED PLASTER' or ([extn goods desc]) like 'NEEDLES, CATHETERS, CANNULAE A' 
+	or ([extn goods desc]) like 'MELOXICAM' or ([extn goods desc]) like 'MENTHOL CRYSTAL INDIAN' or ([extn goods desc]) like 'MENTHOL CRYSTALS' or ([extn goods desc]) like 'MENTHOL LEVO MENTHO, BP CRYSTALS' or ([extn goods desc]) like 'METFOR.ORIFARM 1000MG'
+	or ([extn goods desc]) like 'METFOR.ORIFARM 850MG'  or ([extn goods desc]) like 'MYCOPHENOLATE' or ([extn goods desc]) like 'NAPROXEN' or ([extn goods desc]) like 'NICOTINE LOZENGE' or ([extn goods desc]) like 'NICOTINE LOZENGES'  then 'MEDICAL' 
+	when lower([extn goods desc]) like '%health food%' or lower([extn goods desc]) like '%keto%' or lower([extn goods desc]) like '%supplement%' or ([extn goods desc]) like 'CASEIN' or ([extn goods desc]) like 'CASTOR OIL AND FRACTIONS THERE'
+	or ([extn goods desc]) like 'HONIBE GUMMIEBEES' then 'SUPPLEMENTS' 
+	when lower([extn goods desc]) like '%apple%' then 'APPLE' 
+	when lower([extn goods desc]) like '%book%' or lower([extn goods desc]) like '%printer%' or lower([extn goods desc]) like '%calender%' or lower([extn goods desc]) like '%cartridges%' or 
+	lower([extn goods desc]) like '%machine%' or lower([extn goods desc]) like '%electric%'   or lower([extn goods desc]) like '%electronic%'  or lower([extn goods desc]) like '%automobile%' 
+	or lower([extn goods desc]) like '%radio%cassette%cd%' or lower([extn goods desc]) like '%x-ray%'   or lower([extn goods desc]) like '%wood%' or lower([extn goods desc]) like '%willow%basket%' 
+	or lower([extn goods desc]) like '%windows%' or lower([extn goods desc]) like '%aluminium%foil%' or lower([extn goods desc]) like '%wheel%assemblies%' or lower([extn goods desc]) like '%automat%'  
+	or lower([extn goods desc]) like '%weighing%instruments%' or lower([extn goods desc]) like '%vehicles%'  or lower([extn goods desc]) like '%zinc%oxide%disc%' or lower([extn goods desc]) like '%foam%sheet%'  
+	or lower([extn goods desc]) like '%tyres%' or lower([extn goods desc]) like '%tube%' or lower([extn goods desc]) like '%suitcase%'  
+	or lower([extn goods desc]) like '%plate%' or lower([extn goods desc]) like '%trampoline%' or lower([extn goods desc]) like '%polyester%film%'  or lower([extn goods desc]) like '%thermal%transfer%ribbon%' 
+	or lower([extn goods desc]) like '%stoneware%' or lower([extn goods desc]) like '%steel%pedestal%screw%'  or lower([extn goods desc]) like '%steam%trap%valve%'  or lower([extn goods desc]) like '%used%household%' 
+	or lower([extn goods desc]) like '%usb%' or lower([extn goods desc]) like '%sofa%' or lower([extn goods desc]) like '%yarn%'  
+	or lower([extn goods desc]) like '%steamer%' or lower([extn goods desc]) like '%saddlery%and%'   or lower([extn goods desc]) like '%rubber%tile%' or lower([extn goods desc]) like '%radio%' or lower([extn goods desc]) like '%ramblerbtblu%' 
+	or lower([extn goods desc]) like '%printing%ink%' or lower([extn goods desc]) like '%plastic%'  or lower([extn goods desc]) like '%piston%' or lower([extn goods desc]) like '%ink%cartridge%'   or lower([extn goods desc]) like '%panels%,%boards%,%tiles%'  or lower([extn goods desc]) like '%letter%bags%' 
+	or lower([extn goods desc]) like '%kks%s%'   or lower([extn goods desc]) like '%kk%miniatures%'  or lower([extn goods desc]) like '%kid%active%zebra%sensory%'
+	or ([extn goods desc]) like 'ARTICLES OF GRAPHITE OR OTHER' or ([extn goods desc]) like '%ARTICLES OF STONE OR OTHER MIN' or lower([extn goods desc]) like '%battery%' or lower([extn goods desc]) like '%batteries%'  or lower([extn goods desc]) like '%lithium%ion%'   
+	or ([extn goods desc]) like 'ARALDITE ECN 1273 US B 50LB Q4E' or ([extn goods desc]) like '2 IN 1 GLUE ROLLING BALL PEN,MAGENTA CAP AND TIP STIX2 GRAPHICS'
+	or ([extn goods desc]) like '2 PX 478.200 KG 1.922 CBM ACTUATOR FOR AUTOMOTIVE AIR CONDITIONI NG SYSTEM 8501.10 ACTUAL SHIPPER WOORY INDUSTRIAL CO.,LTD' 
+	or ([extn goods desc]) like '25 CT 325.000 KG 0.528 CBM CALENDARS 4910.00 ACTUAL SHIPPER APL LOGISTICS KOREA LTD' or ([extn goods desc]) like '27 PALLET(S) OF PETG SHRINK FILM%' or ([extn goods desc]) like 'ALL SEASONS MEMORY FOAM PILLOW%'
+	or ([extn goods desc]) like 'AQUARIUM ACCESSORIES' or ([extn goods desc]) like 'BATH BEADS' or ([extn goods desc]) like 'BATH GIFT SET' or ([extn goods desc]) like 'BRACKETTHERMOSTAT' or ([extn goods desc]) like 'CALENDAR' 
+	or lower([extn goods desc]) like '%candle%'  or ([extn goods desc]) like 'CARBOYS, BOTTLES, FLASKS AND S' or ([extn goods desc]) like 'CHRISTMAS DECORATION' or ([extn goods desc]) like 'CLAY SCULOTURES' 
+	or ([extn goods desc]) like 'CUTTERS, BLADES AND SCRAPERS' or ([extn goods desc]) like 'DINNERWARE' or ([extn goods desc]) like 'FLOOR COVERINGS AND MATS, OF V' or ([extn goods desc]) like 'FOOTSTOOL' or ([extn goods desc]) like 'FURNITURE'
+    or ([extn goods desc]) like 'FURNITURE%CHESTS, CABINETS, D' or ([extn goods desc]) like 'GIANT SANTA/REINDEER GUMMY ETC' or ([extn goods desc]) like 'MATTRESS SUPPORTS FOR BED FRAM' or ([extn goods desc]) like 'METAL DECORATION' 
+	or ([extn goods desc]) like 'HIKOKI POWER TOOLS' or ([extn goods desc]) like 'MISC DUPLEX 250/60 WHITE' or ([extn goods desc]) like 'MODEL TRAIN SET' 
+	or ([extn goods desc]) like '100% ACRYLIC KNITTED HAT 100% COTTON WOVEN CAP' or ([extn goods desc]) like 'FOOTWEAR WITH OUTER SOLES OF R' or ([extn goods desc]) like 'FOOTWEAR, INCORPORATING A PROT' or ([extn goods desc]) like 'GLOVES'
+     or ([extn goods desc]) like 'GLOVES, MITTENS AND MITTS, IMP' or lower([extn goods desc]) like '%fabric%' or lower([extn goods desc]) like '%textile%'  or lower([extn goods desc]) like '%soccer%shoes%' 
+	 or lower([extn goods desc]) like '%shoes%' then 'OFFICE, HOME and MACHINE EQUIPMENTS'
+	when ([extn goods desc]) like 'DRY FILM PHOTORESIST' or ([extn goods desc]) like 'DRY FILM PHOTORESIST IS SENSITIZED AND UNEXPOSED.' or ([extn goods desc]) like 'PHOTOGRAPHIC MATERIAL AND' or ([extn goods desc]) like 'PHOTOGRAPHIC MATERIALS' or
+     ([extn goods desc]) 
+	 like 'DRY FILM PHOTORESIST P.O.NO 11595 DELIVERED, DUTY PAID SHIPPER DESI RES TO STATE THAT THE EXPORTER OF THE PRODUCTS COVE RED BY THIS DOCU MENT ( CUSTOMS AUTHORIZATION NO 010-14 -100047 ) DECLARES THAT, EXCEPT WHERE OTHERWISE CLEARLY IN DICATED, THESE PRO'
+    or  ([extn goods desc]) like 'Of a width exceeding 35 mm (Other) (Photographic film in rolls, sensit ised, unexposed, of any material other than paper, paperboard or texti les; instant print film in rolls, sensitised, unexposed)'
+	or ([extn goods desc]) like 'PHOTOGRAPHIC MATERIALS AND' or ([extn goods desc]) like 'PHOTOGRAPHIC MATERIALS AND RELATED ARTICLES' or ([extn goods desc]) like 'Photographic paper, photographic film' or
+	([extn goods desc]) like 'PHOTOSENSITIVE DRY FILM' or ([extn goods desc]) like 'HITACHI PHOTOSENSITIVE DRY FILM' or ([extn goods desc]) like 'INK MATERIAL'
+	or ([extn goods desc]) like 'INK MATERIALETL' or UPPER([extn goods desc]) like '%PHOTO EQUIPMENT%'  or ([extn goods desc]) like '%ART WORK (CHILLED)%' then 'PHOTOGRAPHY AND FILM' 
+	when lower([extn goods desc]) like '%mango%' then 'MANGO' 
+	when lower([extn goods desc]) like '%coffee%' or lower([extn goods desc]) like '%tea'  or lower([extn goods desc]) like '%kombucha%'  or lower([extn goods desc]) like '%green%tea%'  then 'COFFEE AND TEA' 
+	when lower([extn goods desc]) like '%banana%non-frozen%' or lower([extn goods desc]) like '%dried%banana%' or lower([extn goods desc]) like '%other%banana%'  or lower([extn goods desc]) like '%valid%banana%'  then 'BANANA' 		
+    when lower([extn goods desc]) like '%mango%' then 'MANGO' 
+	when lower([extn goods desc]) like '%onion%' or lower([extn goods desc]) like 'DRIED SHALLOT' then 'ONION' 
+	when lower([extn goods desc]) like '%vegetable%' or lower([extn goods desc]) like '%mushroom%' or lower([extn goods desc]) like '%turnip%' or lower([extn goods desc]) like '%radish%'
+	or lower([extn goods desc]) like '%vegetarian%'  or lower([extn goods desc]) like '%taro%'   or lower([extn goods desc]) like '%vegitables%'  or lower([extn goods desc]) like '%vegt/%'  
+	or lower([extn goods desc]) like '%snap%pea'  or lower([extn goods desc]) like '%unshelled%peas %'     or lower([extn goods desc]) like '%cassava%' or lower([extn goods desc]) like '%vegatable%'
+	or lower([extn goods desc]) like 'frozen veg.'  or lower([extn goods desc]) like '%satoimo%'  or lower([extn goods desc]) like '%pea%pods%'  or lower([extn goods desc]) like '%dried%bitter%melon%'  
+	or lower([extn goods desc]) like '%broccoli%' or ([extn goods desc]) like 'ARPARAGUS LETTUCE' or ([extn goods desc]) like 'BRUSSELS SPROUTS, FRESH OR CHI' or ([extn goods desc]) like 'FROZEN CHOY SUM' or ([extn goods desc]) like 'FROZEN MIXTURE OF VEG'
+	or ([extn goods desc]) like 'IQF PAK CHOI' or ([extn goods desc]) like 'IQF TINDORA' or ([extn goods desc]) like 'FRESH OR CHILLED SALAD BEETROO'  or ([extn goods desc]) like 'BRAISED BURDOCK' 
+	or ([extn goods desc]) like 'BURDOCK' or lower([extn goods desc]) like '%seaweed%' or lower([extn goods desc]) like '%kelp%' or ([extn goods desc]) like 'FROZEN LOTUS ROOT SLICE' 
+	or ([extn goods desc]) like 'LOTUS ROOT' or ([extn goods desc]) like 'IQFLOTUSROOTSLICED' or lower([extn goods desc]) like 'ALDI POTATO ROSTI BASKETS' then 'VEGETABLES' 
+	when lower([extn goods desc]) like '%water%melon%' or lower([extn goods desc]) like '%pasteque%' then 'WATER MELON' 
+	when lower([extn goods desc]) like '%meat%' or lower([extn goods desc]) like '%vegan%ribs%' 
+	or ([extn goods desc]) like 'FROG LEG' or ([extn goods desc]) like 'FROZEN CARCASES AND HALF-CARCA' or ([extn goods desc]) like 'FROZEN FULLY COOKED BATTERED' or ([extn goods desc]) like 'FROZEN FULLY COOKED BREADED CRISPY' 
+    or ([extn goods desc]) like 'FROZEN FULLY COOKED HOT KING BURGER' or ([extn goods desc]) like 'FROZEN FULLY COOKED SALT & CHILI' or ([extn goods desc]) like 'GUTS, BLADDERS AND STOMACHS OF' 
+	or lower([extn goods desc]) like '%lamb%' or lower([extn goods desc]) like '%mutton%' or ([extn goods desc]) like 'FROZEN BONELESS CUTS OF SHEEP' 
+	or ([extn goods desc]) like 'FROZEN CUTS OF SHEEP, WITH BON' or lower([extn goods desc]) like '%pork%' or lower([extn goods desc]) like '%pigs'  
+	or ([extn goods desc]) like 'FROZEN HAMS, SHOULDERS AND CUT%' or lower([extn goods desc]) like '%turkey%' or  lower([extn goods desc]) like '%duck%' or lower([extn goods desc]) like '%beef%'  
+	or ([extn goods desc]) like 'FROZEN BOVINE CARCASES AND HAL' or ([extn goods desc]) like 'FROZEN BOVINE CUTS, WITH BONE' or ([extn goods desc]) like 'FROZEN EDIBLE BOVINE LIVERS' 
+	or ([extn goods desc]) like 'FROZEN EDIBLE BOVINE TONGUES' then 'OTHER MEAT' 
+	when lower([extn goods desc]) like '%beer%'  or lower([extn goods desc]) like '%brew%' or lower([extn goods desc]) like '%alcohol%beverages%'  or lower([extn goods desc]) like '%fermented%' or lower([extn goods desc]) like '%alcohol%'
+	or lower([extn goods desc]) like '%liqueurs%' or ([extn goods desc]) like '%CABERNET SAUVIGNON,HOWELL%' or ([extn goods desc]) like '%FLUERE ORIGINAL 700 ML CANADA%' or ([extn goods desc]) like '%SPIRITS%' or ([extn goods desc]) like '%WINE%'
+    or ([extn goods desc]) like '%GOZU NO MINE JUNMAIGINJO, KOSHI NO AJIWAI DAIGINJO%' or ([extn goods desc]) like '%GOZU NO SUISEN JUNMAISHU, GOZU NO MINE JUNMAIGINJO%' or lower([extn goods desc]) like '%wine%' 
+	or lower([extn goods desc]) like '%zinfandel%' or lower([extn goods desc]) like '%chardonnay%' or lower([extn goods desc]) like '%westside%farms%vineyard%'  
+	or lower([extn goods desc]) like '%sake%' 	then 'ALCOHOLIC BEVERAGES'
+   	when lower([extn goods desc]) like '%bread' or  lower([extn goods desc]) like '%bread,%'  or lower([extn goods desc]) like '%wet%flour%' or lower([extn goods desc]) like '%cherry%concentrate%' 
+	or lower([extn goods desc]) like '%syrup%gift%set%' or lower([extn goods desc]) like '%pita%' or lower([extn goods desc]) like '%12pkorign%' or lower([extn goods desc]) like '%samosa%' 
+	or lower([extn goods desc]) like '%bakery%' or lower([extn goods desc]) like '%paratha%' or lower([extn goods desc]) like '%bistro%bun%'  or lower([extn goods desc]) like '%buns%' or lower([extn goods desc]) like '%flour%bun%' 
+	or lower([extn goods desc]) like '%pastry%' or lower([extn goods desc]) like '%pastries%' or lower([extn goods desc]) like '%steamed%bun%'  or lower([extn goods desc]) like '%roti%' or lower([extn goods desc]) like '%bean%bun%'  
+	or lower([extn goods desc]) like '%kudzu%flour%' or lower([extn goods desc]) like '%cake%'  then  'BREAD AND BAKING ITEMS' 
+	when lower([extn goods desc]) like '%chicken%' or ([extn goods desc]) like 'DIGGERS BONELESS WINGS 5X1KG' or ([extn goods desc]) like 'DIGGERS HOT N SPICY FILLETS 125G 5X1KG' then 'CHICKEN' 	
+	when lower([extn goods desc]) like '%cereal%' or ([extn goods desc]) like 'DRIED BARLEY (PUDDING)' or ([extn goods desc]) like 'GOLDEN NUGGET' or ([extn goods desc]) like 'HULLED NON GLUTINOUS MILLET' 
+    or ([extn goods desc]) like 'HULLED SORGHUM' or lower([extn goods desc]) like '%corn%' then 'CEREAL' 
+	when lower([extn goods desc]) like '%rice%' then 'RICE' 
+	when lower([extn goods desc]) like '%blueberr%' or lower([extn goods desc]) like '%blackberr%' or lower([extn goods desc]) like '%strawberr%'  or lower([extn goods desc]) like '%raspberr%'  
+	or lower([extn goods desc]) like '%acai' or lower([extn goods desc]) like '%grapes%' then 'BERRIES' 
+	when lower([extn goods desc]) like '%coconut%' then 'COCONUT' 
+	when lower([extn goods desc]) like '%food%' or  lower([extn goods desc]) like '%yuzu%' or  lower([extn goods desc]) like '%yutaka%'  or  lower([extn goods desc]) like '%yt%' or  lower([extn goods desc]) like '%yacon%' 
+	or lower([extn goods desc]) like '%wheat%' or lower([extn goods desc]) like '%whipping%'  or lower([extn goods desc]) like '%water%' or lower([extn goods desc]) like '%wasabi%' 
+	or lower([extn goods desc]) like '%foodstuff%' or lower([extn goods desc]) like '%vianco%carry%powder%' or lower([extn goods desc]) like '%teryaki%sauce%' or lower([extn goods desc]) like '%kimchi%' 
+	or lower([extn goods desc]) like '%poggi%kimchi%' or lower([extn goods desc]) like '%pumpkin%croquette%' or lower([extn goods desc]) like '%pomegranates%'  or lower([extn goods desc]) like '%pizza%crust%'  or lower([extn goods desc]) like '%pickled%'   
+	or lower([extn goods desc]) like '%cranberr%' or lower([extn goods desc]) like '%drink%' or lower([extn goods desc]) like '%green%tea%lemon%'  or lower([extn goods desc]) like '%melon%tea%' 
+	or lower([extn goods desc]) like '%perishable%beverage%' or lower([extn goods desc]) like '%farafel%'  or lower([extn goods desc]) like '%papaya%chunk%'  or lower([extn goods desc]) like '%granola%' 
+	or lower([extn goods desc]) like '%diet%carbonated%beverage%' or lower([extn goods desc]) like '%oatmeal%' or lower([extn goods desc]) like '%snack%'  or lower([extn goods desc]) like '%skewered%raw%pd%' 
+	or lower([extn goods desc]) like '%pizza%bases%'  or lower([extn goods desc]) like '%black%fungus%'   or lower([extn goods desc]) like '%dried%potato%'  or lower([extn goods desc]) like '%tapioca%'    
+	or lower([extn goods desc]) like '%durian%'  or lower([extn goods desc]) like '%kirtiraj%' or lower([extn goods desc]) like '%jams%' or lower([extn goods desc]) like '%soup%' or lower([extn goods desc]) like '%spring%roll%' 
+	or ([extn goods desc]) like 'BUENAS STEAMED SABA' or ([extn goods desc]) like 'CANNED FRUITS COCKTAIL IN LIGHT SYRUP' or ([extn goods desc]) like 'CARROTS IN AIRTIGHT CONTAINERS' or ([extn goods desc]) like 'COCOFINA BRAND'
+	or ([extn goods desc]) like 'CREAM STEW MIX' or ([extn goods desc]) like 'EDIBLE FRUITS' or ([extn goods desc]) like 'EDIBLE MIXTURES OR PREPARATION' or ([extn goods desc]) like 'GUACAMOLE' or lower([extn goods desc]) like '%waffle%' 
+	or ([extn goods desc]) like 'NATURAL FLAVORED DISTILLED VINEGAR' or ([extn goods desc]) like 'GUA BAO' or ([extn goods desc]) like 'GUO BAO' 
+	or ([extn goods desc]) like 'ASSORTED NON-DAIRY & VEGAN FOD'  or lower([extn goods desc]) like '%noodle%' or lower([extn goods desc]) like '%juice%' or lower([extn goods desc]) like '%tofu%' 
+	or ([extn goods desc]) like 'HONEY' or ([extn goods desc]) like 'NATURAL HONEY'  or ([extn goods desc]) like 'BEVERAGES'  then 'FOODSTUFF' 
+    when lower([extn goods desc]) like '%bamboo%' then 'BAMBOO' 
+	when lower([extn goods desc]) like '%avocado%' or lower([extn goods desc]) like '%truffle%' or lower([extn goods desc]) like '%jack%fruit%' or lower([extn goods desc]) like '%tamarind%' or ([extn goods desc]) like '14. SEEDLESS BITTER MELON'
+	or ([extn goods desc]) like 'CHAYOTE, FRESH OR CHILLED' or ([extn goods desc]) like 'DIOSPYROS KAKI' or ([extn goods desc]) like 'DRIED MIX FRUIT' or ([extn goods desc]) like 'DRIED PAPAYA 100GR' 
+	or ([extn goods desc]) like 'FATS AND OILS DERIVED FROM MIL' or ([extn goods desc]) like 'FREIGHT PREPAID' or ([extn goods desc]) like 'FRESH AIR EXCHANGE' or ([extn goods desc]) like 'FRESH LONGAN' 
+	or ([extn goods desc]) like 'FRESH OR CHILLED FRUITS OF THE' or ([extn goods desc]) like 'FROZEN FRUIT' or ([extn goods desc]) like 'Fruit & edible plant parts nesoi, prep etc. nesoi' or ([extn goods desc]) like 'FRUIT AND OTHER EDIBLE PARTS O'
+	or ([extn goods desc]) like 'FRUIT STONES AND KERNELS AND O' or ([extn goods desc]) like 'FRUITS OF THE GENUS CAPSICUM O' or ([extn goods desc]) like 'INDIAN FRESH FRUITS' or ([extn goods desc]) like 'INDIAN FRESH FRUITS FRESH'
+	or ([extn goods desc]) like 'MIX FRUITS CHIP' or ([extn goods desc]) like 'MOMORDICA FRUIT' or ([extn goods desc]) like 'NON REGULATED MATERIAL' or ([extn goods desc]) like 'IQF MIX FRUIT DICE' or ([extn goods desc]) like 'IQF APRICOT DICES'
+	or ([extn goods desc]) like 'IQF KARELA' or lower([extn goods desc]) like '%tomato%' or ([extn goods desc]) like 'FRESH GRAPEFRUIT' or ([extn goods desc]) like 'GRAPEFRUIT' 
+	or lower([extn goods desc]) like 'Figs, non-frozen, fruit' or lower([extn goods desc]) like '%okra%' or ([extn goods desc]) like 'FRESH CHERRIES' or ([extn goods desc]) like 'FRESH CHERRY' 
+	or lower([extn goods desc]) like '%pumpkin%' or lower([extn goods desc]) like '%pear%' or lower([extn goods desc]) like '%peach%' then 'OTHER FRUITS' 	
+	when lower([extn goods desc]) like '%white%cheddar%' or lower([extn goods desc]) like '%salted%spreadable%' or lower([extn goods desc]) like '%uht%creamer%'
+	or ([extn goods desc]) like 'CHEDDAR WHITE MATURE' or ([extn goods desc]) like 'DAIRY SPREADS OF A FAT CONTENT' or ([extn goods desc]) like 'MAYONNAISE' or lower([extn goods desc]) like '%milk%'
+	or ([extn goods desc]) like 'MILLAC GOLD' or ([extn goods desc]) like 'MILLAC GOLD COOKING' or ([extn goods desc]) like 'MILLAC GOLD COOKING CREAM' or ([extn goods desc]) like 'MILLAC MAID' 
+	or lower([extn goods desc]) like '%butter%' or lower([extn goods desc]) like '%cheese%' or lower([extn goods desc]) like '%pritchitts%gold%' then 'DIARY' 	
+	when lower([extn goods desc]) like '%walnut%' or lower([extn goods desc]) like '%peanut%'  or lower([extn goods desc]) like '%pistachios%' or lower([extn goods desc]) like '%nuts%'  or lower([extn goods desc]) like '%lotus%seed%'
+	or lower([extn goods desc]) like '%cashew%' or ([extn goods desc]) like 'CHESTNUT' or ([extn goods desc]) like 'DRIED ALMOND (SOUTH)'	 then 'NUTS' 
+	when lower([extn goods desc]) like '%blu%bbb%' or lower([extn goods desc]) like '%vuse%epod%' or lower([extn goods desc]) like '%blu%pod%ment%' 
+	or ([extn goods desc]) like 'BLU BTL 1.0 1.6% GOLDENTOB CBB1 GB' or ([extn goods desc]) like 'BLU BTL 1.0 1.6% BLUBRRY CBB1 GB' or ([extn goods desc]) like 'BLU BTL 1.0 1.6% MENT CBB 1 GB' 
+	or ([extn goods desc]) like '%BLU PRO CLEAROMISER CBB 1 (CS) GB' or ([extn goods desc]) like 'CLEAMIZER' or ([extn goods desc]) like 'CLEAMIZER,EMPTY PP BERREL' or ([extn goods desc]) like 'CLEAMIZER;EMPTY PP BERREL'
+	or ([extn goods desc]) like 'CLEARMIZER' or ([extn goods desc]) like 'E-CIGARETTES' then 'VAPE PRODUCTS' 
+	when lower([extn goods desc]) like '%tree%' or lower([extn goods desc]) like '%industrial%plants%'  or lower([extn goods desc]) like '%seed%potato%' or lower([extn goods desc]) like '%ornamental%plant%' 
+	or lower([extn goods desc]) like '%live%plant%' or lower([extn goods desc]) like '%lily%bulb%'    	
+	or ([extn goods desc]) like 'ARROW HEAD' or lower([extn goods desc]) like '%flower%' or ([extn goods desc]) like 'FRESH CUT CHRYSANTHEMUMS AND B' then 'GARDEN' 
+	when lower([extn goods desc]) like '%tayninh%salt%' or lower([extn goods desc]) like '%spices%' or lower([extn goods desc]) like '%spice%gift%set%' or lower([extn goods desc]) like '%miso%'  
+	or lower([extn goods desc]) like '%sesame%' or lower([extn goods desc]) like '%seasoning%' 	or lower([extn goods desc]) like '%sauce%'  or lower([extn goods desc]) like '%pepper%powder%'  
+	or lower([extn goods desc]) like '%pumpking%seeed%' or lower([extn goods desc]) like '%pepper%' or lower([extn goods desc]) like '%turmeric%powder%' or lower([extn goods desc]) like '%red%annatto%powder%'
+	or lower([extn goods desc]) like '%curry%leaves%' or lower([extn goods desc]) like '%lime%leaf%'  or lower([extn goods desc]) like '%lemon%grass%' 
+	or lower([extn goods desc]) like '%ginger%'  or ([extn goods desc]) like 'IQF FROZEN GALANGAL' 	or ([extn goods desc]) like 'CINNAMON POWDER' or ([extn goods desc]) like 'CINNAMON POWDER 100GR' or ([extn goods desc]) like 'DRIED GIANG LEAF'
+	or ([extn goods desc]) like 'DRIED KUMQUAT' or ([extn goods desc]) like 'DRIED LOTUS ROOT SLICE' or ([extn goods desc]) like 'DRIED SHALLOT FLAKE' or ([extn goods desc]) like 'DRIED WINTER MELON' or ([extn goods desc]) like 'FIVE SPICE POWDER'
+	or ([extn goods desc]) like 'FROZEN LIME LEAVES' or ([extn goods desc]) like 'FROZEN PANDAN LEAF' or ([extn goods desc]) like 'FROZEN PATRA CUT' or ([extn goods desc]) like 'MILLED KAFFIR LIME ZEST'
+	or ([extn goods desc]) like 'MOLASSES' or lower([extn goods desc]) like '%garlic%' or lower([extn goods desc]) like '%chilli%' or ([extn goods desc]) like 'FROZEN CRUSHED GREEN CHILI' 
+	or ([extn goods desc]) like 'FROZEN CRUSHED RED CHILI' or ([extn goods desc]) like 'IQF GREEN CHILI PUREE' or ([extn goods desc]) like 'IQF GREEN CHILI RINGS' or ([extn goods desc]) like 'IQF RED CHILI RINGS' 
+	or ([extn goods desc]) like 'IQF RED CHILI RINGS AA' or lower([extn goods desc]) like '%sugar%' 
+	or ([extn goods desc]) like 'FROZEN GALANGAL' or ([extn goods desc]) like 'HERBAL LEAVES' or ([extn goods desc]) like 'HERBS PRODUCTS' or ([extn goods desc]) like 'HT LA XONG CAM HERBAL LEAVES' or ([extn goods desc]) like 'IQF LIME LEAVE MILLED'
+    or ([extn goods desc]) like 'IQF SPINACH CUT' or ([extn goods desc]) like 'IQF METHI' then 'SEASONING' 	
+	when lower([extn goods desc]) like '%synthetic%rubber%' or lower([extn goods desc]) like '%packaging%material%' or lower([extn goods desc]) like '%spare%parts%' or lower([extn goods desc]) like '%packing%material%' 
+	or lower([extn goods desc]) like '%optical%fibre%' or lower([extn goods desc]) like '%silicon%' or lower([extn goods desc]) like '%silica%' or lower([extn goods desc]) like '%resolute%newsprint%' 
+	or lower([extn goods desc]) like '%poly%carrier%' or lower([extn goods desc]) like '%coilthread%'  or lower([extn goods desc]) like '%pulp%board%' or lower([extn goods desc]) like '%laminate%film%' or lower([extn goods desc]) like '%laminate%sheet%' 
+	or lower([extn goods desc]) like '%phenolic%board%' or lower([extn goods desc]) like 'pet film'  or lower([extn goods desc]) like 'pet shrink film%'   or lower([extn goods desc]) like '%oxygen%absorber%'  
+	or ([extn goods desc]) like 'ELECTRO-DIAGNOSTIC APPARATUS,' or ([extn goods desc]) like '2250-093 REEMAY 1371MM ON 1 SKID' or ([extn goods desc]) like '2250-093 REEMAY 1371MM ON 1 SKID%' or ([extn goods desc]) like '2K CONDUCTIVITY STANDARD'
+	or ([extn goods desc]) like '480 BAGS ESTER GUM 8BG 50' or ([extn goods desc]) like '480 BAGS ESTER GUM 8BG 50 LB' or ([extn goods desc]) like 'AUTOMOTIVE PARTS FOR OPEL' or ([extn goods desc]) like 'BALL BEARINGS' or ([extn goods desc]) like 'BEARING'
+	or ([extn goods desc]) like 'BELT DRIVE SYSTEM PARTS' or ([extn goods desc]) like 'BEVERAGE FRUIT FLAVORINGS' or ([extn goods desc]) like 'CABLE' or ([extn goods desc]) like 'CARBON FIBER PREPREG' or ([extn goods desc]) like 'CARBON FIBER PREPREG ETC ETC'
+	or ([extn goods desc]) like 'CARBON PREPREG' or ([extn goods desc]) like 'CERAMIC FUSE' or ([extn goods desc]) like 'COMMERCIAL AIRCRAFT PARTS' or ([extn goods desc]) like 'COMMUNICATIONS EQUIPMENT'  or ([extn goods desc]) like 'CONNECTOR TRANSFORMER'
+	or ([extn goods desc]) like 'CONTROL BOARD & WIRE WITH PLUG' or ([extn goods desc]) like 'COPPER CLAD LAMINATE' or ([extn goods desc]) like 'COPPER CLAD LAMINATES' or ([extn goods desc]) like 'COPPER FOIL' 
+	or ([extn goods desc]) like 'COPPEREADY CU4545, NOT REGULATED' or ([extn goods desc]) like 'EMPTY PLA BOTTLE' or ([extn goods desc]) like 'ENGINEERED SHELL SYSTEM ES' or ([extn goods desc]) like 'ENTRY BOARD' 
+	or ([extn goods desc]) like 'ESTER GUM 8BG 50 LB HP BAG' or ([extn goods desc]) like 'ESTER GUMS'  or ([extn goods desc]) like 'EXTRACT FLAVORING LIQUID' or ([extn goods desc]) like 'FOAM' or ([extn goods desc]) like 'GAS TURBINE ENGINE PARTS' 
+	or lower([extn goods desc]) like '%glass%' or ([extn goods desc]) like 'SINGLE MODE OPTICAL FIBER' or ([extn goods desc]) like 'LUBRICANT' or ([extn goods desc]) like 'LUBRICANTS GEL'  or ([extn goods desc]) like 'HARVESTING OR THRESHING MACHIN'
+	or ([extn goods desc]) like 'LUBRICATING PREPARATION FOR POLYESTER FILAMENT' or ([extn goods desc]) like 'HAZ CHEWING GUM INGREDIENTS / CLASS 3 & CLASS 9 - REEFER F' or lower([extn goods desc]) like '%hop%'  
+	or ([extn goods desc]) like '%METAL HOSE CONNECTOR'  then 'MANUFACTURING MATERIALS' 	
+	when lower([extn goods desc]) like '%pasta%' then 'PASTA' 	 
+	when lower([extn goods desc]) like '%spirit%' then 'SPIRITS' 
+	when lower([extn goods desc]) like '%fragrance%' or lower([extn goods desc]) like '%furoate%cream%' or lower([extn goods desc]) like '%cosmetic%' or lower([extn goods desc]) like '%perfum%' 
+	or lower([extn goods desc]) like '%household%' or lower([extn goods desc]) like '%deodorant%' or ([extn goods desc]) like 'Beauty & skin care preparation, nesoi' or([extn goods desc]) like 'BEAUTY OR MAKE-UP PREPARATIONS' 
+	or([extn goods desc]) like 'BEAUTY PRODUCTS' or ([extn goods desc]) like 'DERMATOLOGICAL PRODUCTS' or ([extn goods desc]) like 'EYE LIP PENCIL'  or ([extn goods desc]) like 'EYE MAKE-UP PREPARATIONS' 
+	or ([extn goods desc]) like 'EYE PENCIL LIP PENCIL' or ([extn goods desc]) like 'EYE PENCIL/LIP PENCIL' or ([extn goods desc]) like 'MAKE-UP OR SKIN CARE POWDERS,' then 'COSMETICS' 
+	when lower([extn goods desc]) like '%soy%bean%' or lower([extn goods desc]) like '%soy%sauce%' or lower([extn goods desc]) like '%edamame%' then 'SOY PRODUCT' 
+	when lower([extn goods desc]) like '%dates%' or lower([extn goods desc]) like '%red%date%' or ([extn goods desc]) like 'DATE MOLASSES' then 'DATES' 
+	when lower([extn goods desc]) like '%cabbage%' then 'CABBAGE' 
+	when lower([extn goods desc]) like '%bean%' or lower([extn goods desc]) like '%mung%dal%'  or lower([extn goods desc]) like '%leguminous%' or ([extn goods desc]) like 'FROZEN GREEN CHICKPEAS' then 'BEANS' 
+	when ([extn goods desc]) like '%BERRIES%' or ([extn goods desc]) like '%FRESH CUT ROSES AND BUDS, OF A%' or ([extn goods desc]) like '%FRESH FRAPES%' or ([extn goods desc]) like '%FRESH GRAPE WHITE TH%' 
+	or ([extn goods desc]) like '%FRESH GRAPE WHITE TH FLAME%' or ([extn goods desc]) like '%FRESH GRAPE WHITE TH RED MIX%' or ([extn goods desc]) like '%FRESH GRAPE WHITE TH SH MIX%' or ([extn goods desc]) like '%FRESH GRAPHES%' 
+	or ([extn goods desc]) like '%FROZEN CONCORD GRAPE%' or ([extn goods desc]) like '%GAREPS%' or ([extn goods desc]) like '%GARPES%' or ([extn goods desc]) like '%GRAPES%' then 'BERRIES'
+	when ([extn goods desc]) like '%ARROOWROOT FLOUR%' or ([extn goods desc]) like '%ARROW ROOT%' or ([extn goods desc]) like '%BAKERS WARES%' or ([extn goods desc]) like '%BAKERS% WARES COMMUNION WAFERS%' 	
+	or lower([extn goods desc]) like '%frozen%banana%lea%' or lower([extn goods desc]) like '%banana%lea%' or lower([extn goods desc]) like '%frozen%banana%roll%' 
+     or ([extn goods desc]) like '%BANH LOT FLOUR%' or ([extn goods desc]) like '%BAO BUN%' or ([extn goods desc]) like '%FRUIT FLAVORING%' or ([extn goods desc]) like '%FRUIT FLAVORING 33 02 10%' 
+	 or ([extn goods desc]) like '%Mixes & doughs for prep of bakers wares hdg 1905%' or ([extn goods desc]) like '%MIXES AND DOUGHS OF FLOUR, GRO%' or ([extn goods desc]) like '%BREAD AND BAKING ITEMS%' or ([extn goods desc]) like '%BUN%'
+	or ([extn goods desc]) like '%CAKE%' or ([extn goods desc]) like '%CHINA TOWN - SUI MAI%' or ([extn goods desc]) like '%CHINA TOWN DIM SUM MIX%' or ([extn goods desc]) like '%ASSORTED COOKIES%' 
+	or ([extn goods desc]) like '%DUMPLING%' or ([extn goods desc]) like '%DUMPLING FLOUR%' or ([extn goods desc]) like '%FRESHASIA PIG SHAPED BUN (CUSTARD) FRESHASIA PANDA-SHAPED%' or ([extn goods desc]) like '%FRESHASIA SALTED EGG CUSTARD BUN%'
+	or ([extn goods desc]) like '%FRESHASIA YOU TIAO FRESHASIA CHINESE BUN%' or ([extn goods desc]) like '%FROZEN BREAD DOUGH%' or ([extn goods desc]) like '%FROZEN FLAT BREAD /ETC%' or ([extn goods desc]) like '%FROZEN FLATBREAD / ETC%' 
+	or ([extn goods desc]) like '%GOYZA SKINS%' or ([extn goods desc]) like '%GYOZA SKINS%' or ([extn goods desc]) like '%HUMZA PARATH%' or ([extn goods desc]) like '%LUN BUN%' then 'BREAD AND BAKING ITEMS'
+	when ([extn goods desc]) like '%FAX NOS.: (632)816-4198/ 843-3895%VAT REG. TIN: 000-134-690-000%' or ([extn goods desc]) like '%***PLEASE KEEP BL IDENTICAL TO%' or ([extn goods desc]) like '%@@@ 1000 CTNS IQF DOUBLE FROZE%'
+    or ([extn goods desc]) like '%01 X 40% REFFER CONTAINER STC%' or ([extn goods desc]) like '%01X40%RF FCL CONTAINER STC%' or ([extn goods desc]) like '%1 40 RH SAID TO CONTAIN TOTAL 40 PALLETS%' or ([extn goods desc]) like '%1 JS ORIENTAL SELECTION%'
+    or ([extn goods desc]) like '%1 PX 299.070 KG 2.267 CBM ROASTER 8516.60 ACTUAL SHIPPER COOKZEN , INC%' or ([extn goods desc]) like '%1 X 40% HC REEFER SLAC STC%' or ([extn goods desc]) like '%1 X FCL - 20% REEFER STC ANIMAL HS%'
+	or ([extn goods desc]) like '%1080 SELL UNITS,%' or ([extn goods desc]) like '%1120CTNS IQF DOUBLE FROZEN ATL%' or ([extn goods desc]) like '%14 PALLETS%' or ([extn goods desc]) like '%15428CTNS 243054KGS 1583CBM%' 
+	or ([extn goods desc]) like '%18 KILO TWIN PACK 250-300 G BB GREEN TOP 500 KILO SMALL-MEDIUM 100-300 G BULK BIN SWP 600 KILO SMALL-MEDIUM 100-300 G BULK BIN SWP X20210217827499%' or 
+	([extn goods desc]) like '%18 KILO XL 600-800G GENERIC TOP SWEET POT%' or ([extn goods desc]) like '%18 PALLETS%' or ([extn goods desc]) like '%18 PALLETS STC 1080 SELL UNITS,%' or ([extn goods desc]) like '%1902.20.0040%' 
+	or ([extn goods desc]) like '%1905.90.9090%' or ([extn goods desc]) like '%1X40REF CONTAINER S.T.C%' or ([extn goods desc]) like '%20 BAGS OF 100% ORGANIC%' or ([extn goods desc]) like '%20 PALLETS STC 4400 UNITS%' 
+	or ([extn goods desc]) like '%2000CTNS OF FROZEN CRUSHED GREEN%' or ([extn goods desc]) like '%24 PALLETS HOLDING 1506 CTNS.%' or ([extn goods desc]) like '%24 PALLETS HOLDING 4000 CTNS.%' or ([extn goods desc]) like '%3 PALLETS 330 BOXES CAPE HOT%'
+	or ([extn goods desc]) like '%4 PACKAGING%' or ([extn goods desc]) like '%40 PALETS CONTAINING%' or ([extn goods desc]) like '%40 PLT W/ 1000 CTNS%' or ([extn goods desc]) like '%40 PLTS CONTAINING 40%' or ([extn goods desc]) like '%40 PLTS W/ 1000 CTNS%'
+	or ([extn goods desc]) like '%40 REEFER%' or ([extn goods desc]) like '%4130 PIECES INCLUDING%'	or ([extn goods desc]) like '%435CTNS DOUBLE FROZEN UNDYED S%' or ([extn goods desc]) like '%500 KILO SMALL-MEDIUM 100-300 G BULK BIN SWP 600 KILO SMALL-MEDIUM 100-300 G BULK BIN SWP X20210303627764%'
+	or ([extn goods desc]) like '%672 KEGS - SA, WICKED EASY, KEG 1/6%' or ([extn goods desc]) like '%754 CORRUGATED (BOXES) CONTAINING%' or ([extn goods desc]) like '%773 CORRUGATED (BOXES) CONTAINING%' or ([extn goods desc]) like '%979 CASES%'
+	or ([extn goods desc]) like '%ALONG WITH DATA LOGGER NOS. DATA%' or ([extn goods desc]) like '%ANIMAl PRODUCT%' or ([extn goods desc]) like '%ANIONIC ORGANIC SURFACE-ACTIVE%' or ([extn goods desc]) like '%ANNATO%' 
+	or ([extn goods desc]) like '%AS PER ATTACHED SHEET%' or ([extn goods desc]) like '%ASSORTED FROZEN FRESH%' or ([extn goods desc]) like '%ASSORTED FROZEN STUFF%' or ([extn goods desc]) like '%BACTV,IT,FAB%' 
+	or ([extn goods desc]) like '%BANGLADESH ORIGIN RAW FROZEN READY TO COOK RETAIL%' or ([extn goods desc]) like '%BANGLADESH ORIGIN RAW FROZEN READY TO COOK RETAIL CONSUMER%' or ([extn goods desc]) like '%BI RESP MDPI 400/12MCG%' or ([extn goods desc]) like '%BOTTLE%'
+	or ([extn goods desc]) like '%CAFE MAID%' or ([extn goods desc]) like '%CASSES OF FROZEN%' or ([extn goods desc]) like '%Chem prep, photo use, meas/rtl sale, nesoi%' or ([extn goods desc]) like '%CLOVE%' 
+	or ([extn goods desc]) like '%Composite diagnostic/lab reagents, exc 3002/3006%' or ([extn goods desc]) like '%CP050NS%' or ([extn goods desc]) like '%DATA LOGGER%' or ([extn goods desc]) like '%DBNDN,DE,FAB 15MLX6%S%' 
+	or ([extn goods desc]) like '%DELICACIES%' or ([extn goods desc]) like '%DESICCATED%' or ([extn goods desc]) like '%FIFLTER%' or ([extn goods desc]) like '%FM 300M .03 PSF 38 IN MR WREXHAM ON 1 SKID,%' 
+	or ([extn goods desc]) like '%FM 300M .03 PSF 38% MASTER ROLL WREXHAM ON 1 SKID X20210304663219%' or ([extn goods desc]) like '%FM 300M .03 PSF 38% MASTER ROLL WREXHAM ON 1 SKID, AES ITN - EXPORT # X20210414993085%' or ([extn goods desc]) like 'FROZEN'
+	or ([extn goods desc]) like '%Frozen :' or ([extn goods desc]) like 'FROZEN ALASKA' or ([extn goods desc]) like 'FROZEN D PUTI' or ([extn goods desc]) like 'FROZEN SEASONED' or ([extn goods desc]) like 'FROZEN WHOLE'
+	or ([extn goods desc]) like 'FULL FAT FINE' or ([extn goods desc]) like 'GRAPHS' or ([extn goods desc]) like 'HAND-OPERATED DATE, SEALING OR' or ([extn goods desc]) like 'HD430 NATURAL' or ([extn goods desc]) like 'INSTRUMENTS AND APPARATUS FOR'
+	or ([extn goods desc]) like 'LABEL' or ([extn goods desc]) like 'LOADED INTO' or ([extn goods desc]) like 'LOADED ONTO' or ([extn goods desc]) like 'MATERIAL' or ([extn goods desc]) like 'MIXED GROCERIES' or ([extn goods desc]) like 'MULTIPLY REPLACEMENT'
+	or ([extn goods desc]) like 'ON 20 PALLETS' or ([extn goods desc]) like 'ONE 40 FOOT REFRIGERATED' or ([extn goods desc]) like 'ORDER NO. 058822' or ([extn goods desc]) like 'OTHER' or ([extn goods desc]) like 'OTHER PLANTS AND PARTS OF PLAN'
+	or ([extn goods desc]) like 'OTHER PREPARED BINDERS FOR FOU' or ([extn goods desc]) like 'OTHER PREPARED OR PRESERVED FI' or ([extn goods desc]) like 'others' or ([extn goods desc]) like 'OUR REFERENCE 16863' or ([extn goods desc]) like 'OUR REFERENCE 17220'
+	or ([extn goods desc]) like 'OUR REFERENCE 17221' or ([extn goods desc]) like 'OUR REFERENCE 17222' or ([extn goods desc]) like 'PART OF FCL KGS' or ([extn goods desc]) like 'PARTS' or ([extn goods desc]) like 'PARTS AND ACCESSORIES OF THE M'
+	or ([extn goods desc]) like 'PARTS AND ACCESSORIES, FOR BIC' or ([extn goods desc]) like 'PATCH' or ([extn goods desc]) like 'PERISHABLE' or ([extn goods desc]) like 'POWER SUPPLY' or ([extn goods desc]) like 'PREPARATIONS OF A KIND USED IN'
+	or ([extn goods desc]) like 'PREPARATIONS SUITABLE FOR INFA' or ([extn goods desc]) like 'PREPARED CULTURE MEDIA'	or ([extn goods desc]) like 'PREPARED CULTURE MEDIA FOR THE' or ([extn goods desc]) like 'PREPREG' or ([extn goods desc]) like 'PRODUCTS SUITABLE FOR USE AS G'
+	or ([extn goods desc]) like 'PSC, NOT REGULATED FOR TRANSPORT' or ([extn goods desc]) like 'RAW FROZEN' or ([extn goods desc]) like 'REEFER SET - 18 DEG C' or ([extn goods desc]) like 'REFFER' or ([extn goods desc]) like 'ROHU MRIGAL SHAR PUTI BOAL PANGASH KATLA AYER DRY SHOIL DRY CHAPILA B OAL BLOCK'
+	or ([extn goods desc]) like 'SA, WICKED EASY, KEG 1/6' or ([extn goods desc]) like 'SACKS AND BAGS, INCL. CONES, O' or ([extn goods desc]) like 'SAME AS ABOVE' or ([extn goods desc]) like 'SANDWICH PAU 50G' or ([extn goods desc]) like 'SATAY'
+	or ([extn goods desc]) like 'SCREEN' or ([extn goods desc]) like 'SELL UNITS' or ([extn goods desc]) like 'SEMI-MILLED OR WHOLLY MILLED R' or ([extn goods desc]) like 'SHIPMENT IN 1X40 REEFER CONTAINER' or ([extn goods desc]) like 'SINGAPORE HEAD ON 6 X 250'
+	or ([extn goods desc]) like 'SPFEN,PT,FAB H&L 15MLX6%' or ([extn goods desc]) like 'STAGE EQUIPMENT' or ([extn goods desc]) like 'STARTER KIT' or ([extn goods desc]) like 'STEAM CHARTERED PLANE HS-NO 841981' or ([extn goods desc]) like 'STPSL,UA,FAB15MLX6%S%'
+	or ([extn goods desc]) like 'STRIP' or ([extn goods desc]) like 'STRUCTURES AND PARTS OF STRUCT' or ([extn goods desc]) like 'SUPPORT' or ([extn goods desc]) like 'SUPPORT MATERIAL' or ([extn goods desc]) like 'SYGYGIUM BUXIFOLIUM PODOCARPUS MACROPHYLLA BUXUS SINSAGERETIA THEEZANS CARMONA MACROPHYLLA FICUS RETUSA ZELKOVA SERRATA SERISSA PHO ETIDA CE RAMIC DISH'
+	or ([extn goods desc]) like 'TEMPERATURE SETTING' or ([extn goods desc]) like 'TERMINAL' or ([extn goods desc]) like 'TOTAL 13 PACKAGES ONLY' or ([extn goods desc]) like 'TOTAL 329 PACKAGES ONLY: (14' or ([extn goods desc]) like 'TOTAL 53 PACKAGES ONLY.'
+	or ([extn goods desc]) like 'TOTAL 80 PKG ONLY' or ([extn goods desc]) like 'X20210209415850' or ([extn goods desc]) like 'X20%ISOTANK CONTAINER(S)' or ([extn goods desc]) like 'X40%HC REEFER SLAC 44 PLTS' 
+	or ([extn goods desc]) like 'IDIEL N2027C IN A 55-GAL DRUM' or ([extn goods desc]) like 'IN 1X40%HC REEFER CONT STC 3000' or ([extn goods desc]) like 'JAPANESE REFINED' or ([extn goods desc]) like 'KERIMID 701 C US D 450LB U8' or ([extn goods desc]) like 'LIFTING TABLE METAL TABLE FRAM'
+	or lower([extn goods desc]) like '%malt%' or ([extn goods desc]) like 'MSC DOUBLE FROZEN, SKINNED AND' or ([extn goods desc]) like 'MTM49L/5HS T650-35 60% ON 13 SKIDS AES ITN - EXPORT # X20211117265269' or ([extn goods desc]) like 'NOT VALID - FRESH OR CHILLED V'
+	or ([extn goods desc]) like 'Phy chem ins/appr; meas vscsty & heat nesoi' or ([extn goods desc]) like 'FROZEN MIXED GROCERIES' or ([extn goods desc]) like 'GREEN RAIDSJ' or ([extn goods desc]) like 'L-MENTHOL' or ([extn goods desc]) like 'MAGGI'
+	or ([extn goods desc]) like 'MIXTURES OF ODORIFEROUS SUBSTA' or ([extn goods desc]) like 'UCR-6K STANDARD-B500 - NON' 
+	or lower([extn goods desc]) like '%tallow%'  or lower([extn goods desc]) like '%gelatin%'  or  lower([extn goods desc]) like '%30049099%'  then 'UNKNOWN'
+	else [extn goods desc] end [extn goods label]
+     ,[extn marks and numbers]
+      ,[num of cartons]
+      ,[total weight]
+      ,[total weight uom]
+      ,[total volume]
+      ,[extn ucd]
+      ,[extn unit tc]
+      ,[extn train operator]
+      ,[extn train destination]
+      ,[extn tc trans temp]
+      ,[extn unit agent]
+      ,[extn dangerous goods]
+      ,[extn load desc]
+      ,[extn tos no]
+      ,[extn tranship status]	  
+	  ,[type]
+	  ,[port] 
+      ,[box_type]
+	----  ,[SERVICE]
+   ----   ,[LINE]
+	  ,[TEU]
+  into [test_environment].[dbo].[um10]
+  FROM [test_environment].[dbo].[um9];
+
+
+ -----------------------------------------------------------------------------------------------final table insert  
+SELECT 
+	   [shipment type]
+      ,[shipment no]
+      ,[actual shipment date]
+ ---    ,[actual delivery date]
+  ----    ,[actual delivery date1]
+      ,[extn unit no]
+      ,[extn unit size type]
+      ,[extn shipping line]
+      ,[extn port of origin]
+	  ,[Place]
+      ,[Country]
+      ,[extn voyage id]
+      , case
+	  when  lower([extn consignee]) like '%zygo%limited%' or lower([extn consignee]) like '%zygo%ltd%' then 'zygo limited'  
+	  when  lower([extn consignee]) like '%ziegler%'  then 'ziegler'  
+      when  lower([extn consignee]) like '%wolverine%europe'  then 'WOLVERINE EUROPE LTD'  
+      when  lower([extn consignee]) like '%zeus%packaging%'  then 'zeus packaging'  
+      when  lower([extn consignee]) like '%zenith%freight%'  then 'Zenith International Freight'  
+      when  lower([extn consignee]) like '%zen%cargo%'  then 'ZenCargo'  
+      when  lower([extn consignee]) like '%zeina%food'  then 'Zeina Foods LTD'  
+      when  lower([extn consignee]) like '%z&h%'  then 'z&h distribution ltd'  
+      when  lower([extn consignee]) like '%yusen%'  then 'yusen logistics'  
+      when  lower([extn consignee]) like '%ysd logis%'  then 'ysd logistics'  
+      when  lower([extn consignee]) like '%young%black%'  then 'young black industrial stapling ltd'  
+      when  lower([extn consignee]) like '%yorkshire%'  then 'yorkshire shipping ltd'  
+      when  lower([extn consignee]) like '%yoko%limited%'  then 'yoko international limited'  
+      when  lower([extn consignee]) like '%yikang%'  then 'yikang international ltd'  
+      when  lower([extn consignee]) like '%yft%logistics%'  then 'yft logistics'  
+      when  lower([extn consignee]) like '%yes%2%ship%'  then 'yes 2 ship ltd'  
+      when  lower([extn consignee]) like '%yearsley%'  then 'yearsley food limited'  
+      when  lower([extn consignee]) like '%yara%ltd%'  then 'yara uk ltd'  
+      when  lower([extn consignee]) like '%yamazaki%'  then 'Yamazaki Mazak uk ltd'  
+      when  lower([extn consignee]) like '%yamato%transport%'  then 'yamato transport europe'  
+      when  lower([extn consignee]) like '%yamaha%music%europe%' then 'yamaha music europe'  
+      when  lower([extn consignee]) like '%xpo%logistics%' then 'xpo logistics'  
+      when  lower([extn consignee]) like '%xpand%logistics%' then 'xpand logistics'  
+      when  lower([extn consignee]) like '%xenor%uk%' then 'xenor UK'  
+      when  lower([extn consignee]) like '%wtc%logistics%' then 'wtc logistics'  
+      when  lower([extn consignee]) like 'wta%' then 'wta ltd'  
+      when  lower([extn consignee]) like 'wt%hill%sons%' then 'wt hill & sons'  
+      when  lower([extn consignee]) like 'ws%logistics%' then 'ws logistics'  
+      when  lower([extn consignee]) like 'wp%fresh%distributor%' then 'wp fresh distributors'  
+      when  lower([extn consignee]) like '%worthington%' then 'worthington enterprises'  
+      when  lower([extn consignee]) like 'woodland%' then 'woodland global limited'  
+      when  lower([extn consignee]) like 'wm%shipping%' then 'wm shipping ltd'  
+      when  lower([extn consignee]) like 'wm%morrison%' then 'wm morrison'  
+      when  lower([extn consignee]) like 'wilko%' then 'wilko limited'  
+      when  lower([extn consignee]) like 'whsmith%' then 'whsmith plc'  
+      when  lower([extn consignee]) like 'whirlpool%' then 'whirlpool uk'  
+      when  lower([extn consignee]) like 'whitworths%' then 'whitworths limited'  
+      when  lower([extn consignee]) like 'whistl%uk%' then 'whistl uk limited'  
+      when  lower([extn consignee]) like 'whb%logistics%' then 'whb logistics'  
+      when  lower([extn consignee]) like 'velta%international%' then 'velta international ltd'  
+      when  lower([extn consignee]) like 'veetee%rice%' then 'veetee rice limited'  
+      when  lower([extn consignee]) like 'vauxhall%motors%' then 'vauxhall motors'  
+      when  lower([extn consignee]) like 'vanguard%logi%' then 'Vanguard logistics services'  
+      when  lower([extn consignee]) like 'ups%scs%' or lower([extn consignee]) like 'ups%supply%chain%solutions%' then 'UPS scs'  
+      when  lower([extn consignee]) like 'unsworth%'  then 'unsworth'  
+      when  lower([extn consignee]) like 'uniserve%'  then 'uniserve ltd'  
+      when  lower([extn consignee]) like 'unique%forwarding%'  then 'Unique Forwarding'  
+      when  lower([extn consignee]) like 'unilever%'  then 'unilever europe'  
+      when  lower([extn consignee]) like 'uniepress%'  then 'uniexpress'  
+      when  lower([extn consignee]) like 'dhl%'  then 'dhl'  
+      when  lower([extn consignee]) like 'bucci%freight%'  then 'bucci freight services'  
+      when  lower([extn consignee]) like 'zeta%shipping%'  then 'zeta shipping uk ltd'  
+      when  lower([extn consignee]) like 'trans%ocean%bulk%'  then 'trans ocean bulk logistics ltd'  
+      when  lower([extn consignee]) like '%kuehne%'  then 'KUEHNE NAGEL LTD'  
+      when  lower([extn consignee]) like 'whirpool%'  then 'whirlpool uk'  
+      when  lower([extn consignee]) like 'denholm%'  then 'DENHOLM GLOBAL LOGISTICS LTD'  
+      when  lower([extn consignee]) like 'vida%fresh%'  then 'VIDAFRESH LTD'  
+      when  lower([extn consignee]) like 's%h%pratt%group%'  then 'SH PRATT GROUP LTD'  
+      when  lower([extn consignee]) like 'edge%worldwide%logi%'  then 'EDGE WORLDWIDE LOGISTICS LIMITED'  
+      when  lower([extn consignee]) like '%hille%brand%' then 'JF HILLEBRAND UK LTD'  
+      when  lower([extn consignee]) like 'primark%'  then 'PRIMARK STORES LIMITED'  
+      when  lower([extn consignee]) like 'schenker%'  then 'schenker ltd'  
+      when  lower([extn consignee]) like '%expeditor%'  then 'EXPEDITORS INTERNATIONAL (UK) LTD'  
+      when  lower([extn consignee]) like '%ligentia%'  then 'LIGENTIA UK LTD'  
+      when  lower([extn consignee]) like 'ev%cargo%'  then 'EV CARGO GLOBAL FORWARDING LIMITED'  
+      when  lower([extn consignee]) like '%key%cargo%'  then 'KEY CARGO INTERNATIONAL LIMITED'  
+      when  lower([extn consignee]) like 'tilda%'  then 'tilda limited'  
+      when  lower([extn consignee]) like '%melon%co%'  then 'MELON & CO LTD'  
+      when  lower([extn consignee]) like 'del%monte%inter%'  then 'DEL MONTE INTERNATIONAL GMBH'  
+      when  lower([extn consignee]) like 'j%c%bamford%excava%'  then 'JC BAMFORD EXCAVATORS LTD'  
+      when  lower([extn consignee]) like '%greencell%'  then 'GREENCELL LTD'  
+      when  lower([extn consignee]) like 'banks%ll%'  then 'banks & lloyd creative logistics'  
+      when  lower([extn consignee]) like '%compagnie%'  then 'COMPAGNIE FRUITIERE UK LIMITED'  
+      when  lower([extn consignee]) like '%robert%kukla%'  then 'ROBERT KUKLA SPEDITION UK LTD'  
+      when  lower([extn consignee]) like '%halfords%'  then 'HALFORDS LIMITED'
+      when  lower([extn consignee]) like 'heysham%ships%agency%'  then 'HEYSHAM SHIPS AGENCY LTD'
+      when  lower([extn consignee]) like 'dsv%'  then 'DSV'
+      when  lower([extn consignee]) like '%morrison%'  then 'wm morrison'  
+      when  lower([extn consignee]) like '%int%procurement%'  then 'INTL PROCUREMENT & LOGISTICS LTD'
+      when  lower([extn consignee]) like '%overseas%transport%company%'  then 'OVERSEAS TRANSPORT COMPANY'
+      when  lower([extn consignee]) like '%albatrans%'  then 'ALBATRANS LONDON (UK) LIMITED'  
+      when  lower([extn consignee]) like '%ev%cargo%'  then 'EV CARGO GLOBAL FORWARDING LTD'  
+      when  lower([extn consignee]) like '%prima%fruit%' or lower([extn consignee]) like '%prima%international%'  then 'prima fruit ltd'  
+      when  lower([extn consignee]) like '%hoover%'  then 'HOOVER LIMITED'  
+      when  lower([extn consignee]) like '%essential%fruit%'  then 'ESSENTIAL FRUIT LIMITED'  
+      when  lower([extn consignee]) like '%agility%logis%'  then 'AGILITY LOGISTICS LTD'  
+      when  lower([extn consignee]) like '%fyffes%'  then 'Fyffes International'
+      when  lower([extn consignee]) like '%am%fresh%' or  lower([extn consignee]) like 'amt%fresh%'  then 'AM FRESH UK LTD'  
+      when  lower([extn consignee]) like '%global%stone%'  then 'GLOBAL STONE LTD'  
+      when  lower([extn consignee]) like '%penasul%'  then 'PENASUL UK LTD'  
+      when  lower([extn consignee]) like 'greenwood%coope%' or lower([extn consignee]) like 'cormar%carpets%' then 'Greenwood & Coope ltd'  
+      when  lower([extn consignee]) like '%ball%beverage%packaging%' then 'Ball Beverage Packaging UK'  
+      when  lower([extn consignee]) like '%the%mosaic%tile%' then 'THE MOSAIC TILE COMPANY'  
+      when  lower([extn consignee]) like '%mattel%' then 'MATTEL EUROPA B.V'  
+      when  lower([extn consignee]) like '%agt%poortman%' then 'AGT Poortman'  
+      when  lower([extn consignee]) like '%jas%fowarding%' or lower([extn consignee]) like 'jas%as%agent%' then 'JAS FORWARDING (UK) LTD'  
+      when  lower([extn consignee]) like '%beko%plc%'  then 'BEKO PLC'  
+      when  lower([extn consignee]) like '%toll%global%forward%'  then 'TOLL GLOBAL FORWARDING GROUP (UK)'  
+      when  lower([extn consignee]) like '%cardinal%maritime%'  then 'CARDINAL MARITIME LIMITED'  
+      when  lower([extn consignee]) like '%kerry%logistics%'  then 'KERRY LOGISTICS UK LTD'  
+      when  lower([extn consignee]) like '%castlegate%'  then 'CASTLEGATE LOGISTICS INC'  
+      when  lower([extn consignee]) like '%bollore%'  then 'BOLLORE LOGISTICS UK LTD'  
+      when  lower([extn consignee]) like '%candour%'  then 'CANDOUR LOGISTICS'  
+      when  lower([extn consignee]) like '%argos%'  then 'ARGOS LIMITED'  
+      when  lower([extn consignee]) like 'tjx%'  then 'TJX UK'  
+      when  lower([extn consignee]) like '%dunelm%'  then 'DUNELM (SOFT FURNISHINGS) LTD'  
+      when  lower([extn consignee]) like '%asda%'  then 'ASDA STORES LTD'  
+      when  lower([extn consignee]) like '%tesco%'  then 'TESCO STORES LTD'  
+      when  lower([extn consignee]) like 'advance%forwarding%'  then 'ADVANCED FORWARDING LTD'  
+      when  lower([extn consignee]) like '%screwfix%'  then 'SCREWFIX DIRECT LIMITED'  
+      when  lower([extn consignee]) like '%amazon%'  then 'amazon'  
+      when  lower([extn consignee]) like '%toyo%tyre%'  then 'toyo tyres'  
+      when  lower([extn consignee]) like 'b%q%'  then 'B Q LIMITED'  
+      when  lower([extn consignee]) like '%toyota%'  then 'TOYOTA MOTOR MANUFACTURING (UK)'  
+      when  lower([extn consignee]) like '%graphic%packaging%'  then 'GRAPHIC PACKAGING INTERNATIONAL'  
+      when  lower([extn consignee]) like '%united%tyre%'  then 'United tire company'
+      when  lower([extn consignee]) like '%sainsburry%'  then 'sainsburry'
+      when  lower([extn consignee]) like '%stapleton%'  then 'stapleton'  
+      when  lower([extn consignee]) like '%shop%direct%'  then 'shop direct'  
+      when  lower([extn consignee]) like '%invista% '  then 'INVISTA TEXTILES (UK) LTD'  
+      when  lower([extn consignee]) like '%takeuchi%'  then 'TAKEUCHI MFG. (U.K.) LIMITED'  
+      when  lower([extn consignee]) like '%shanghai%'  then 'SHANGHAI ELECTRIC UK COMPANY LIMITED'  
+      when  lower([extn consignee]) like '%seko%logistics%'  then 'SEKO LOGISTICS'  
+      when  lower([extn consignee]) like '%warrant%group%'  then 'warrant group limited' 
+      when UPPER([extn consignee]) like '%IKEA%DC%DONCASTER%' or UPPER([extn consignee]) like '%CDC%PE%TERBOROUG%' then 'IKEA'
+      when UPPER([extn consignee]) like '%C%H%ROBINSON%' then 'C.H. ROBINSON' 
+	  when UPPER([extn consignee]) like '%ADIDAS%' then 'ADIDAS' 
+	  when UPPER([extn consignee]) like '%BALL%BEVERAGE%' then 'Ball Beverage Packaging UK' 
+	  when UPPER([extn consignee]) like '%BARFOOTS%OF%BOT%' then 'BARFOOTS OF BOTLEY LTD' 
+	  when UPPER([extn consignee]) like '%BDP%INT%' then 'BDP INTERNATIONAL UK LTD'
+      when UPPER([extn consignee]) like '%BEACON%TECHNOLOGIES%' then 'BEACON TECHNOLOGIES LTD' 
+	  when UPPER([extn consignee]) like '%BELKIN%' then 'BELKIN LIMITED' 
+	  when UPPER([extn consignee]) like '%BIG%K%PRODUCT%'  then 'BIG K PRODUCTS (UK) LIMITED'
+	  when UPPER([extn consignee]) like '%CDS%SUPERSTORES%'  then 'CDS SUPERSTORES INTERNATIONAL LTD'
+	  when UPPER([extn consignee]) like 'CEVA%'  then 'CEVA FREIGHT UK LTD'
+	  when UPPER([extn consignee]) like 'CHINGFORD%'  then 'CHINGFORD FRUIT LIMITED'
+	  when UPPER([extn consignee]) like 'CLADCO%'  then 'CLADCO PROFILES LTD'
+	  when UPPER([extn consignee]) like 'COCA%COLA%'  then 'COCA COLA'
+	  when UPPER([extn consignee]) like '%COMPANY%FRUITIERE%' then 'COMPAGNIE FRUITIERE UK LIMITED'
+	  when UPPER([extn consignee]) like '%COMPLETE%COF%' then 'COMPLETE COFFEE LIMITED'
+	  when UPPER([extn consignee]) like '%CRANE%WORLD%WIDE%' then 'CRANE WORLDWIDE UK LTD'
+	  when UPPER([extn consignee]) like '%DAVIES%TURNER%' then 'DAVIES TURNER & CO LTD'
+	  when UPPER([extn consignee]) like '%DAYGARD%' then 'DAYGARD LOGISTICS GROUP'
+	  when UPPER([extn consignee]) like '%DCG%LOGISTICS%' then 'DCG LOGISTICS UK LTD'
+	  when UPPER([extn consignee]) like '%DE%GROOT%' then 'DE GROOT FRESH PRODUCE LTD'
+	  when UPPER([extn consignee]) like '%DEICHMANN%' then 'DEICHMANN SHOES U.K. LTD'
+	  when UPPER([extn consignee]) like '%DEL%MONTE%' then 'DEL MONTE (UK) LIMITED'
+	  when UPPER([extn consignee]) like '%DG%INTERNATIONAL%' or UPPER([extn consignee]) like '%DG%INT%GROUP%LTD%'  then 'DG INTERNATIONAL GROUP LTD'
+	  when UPPER([extn consignee]) like '%DOW%SILICONES%' then 'DOW SILICONES UK LTD'
+	  when UPPER([extn consignee]) like '%ECU%WORLDWIDE%' then 'ECU WORLDWIDE UK LTD'
+	  when UPPER([extn consignee]) like '%MARKS%SPENCER%' then 'MARKS & SPENCER PLC'
+	  when UPPER([extn consignee]) like '%MATALAN%' then 'MATALAN RETAIL'
+	  when UPPER([extn consignee]) like '%MAURICE%WARD%CO%' then 'MAURICE WARD & CO (UK) LTD'
+	  when UPPER([extn consignee]) like '%METAL%AGENCIES%' then 'METAL AGENCIES LTD'
+	  when UPPER([extn consignee]) like '%METRO%SHIPPING%' then 'METRO SHIPPING LIMITED'
+	  when UPPER([extn consignee]) like '%MICHEL%DEVER%' then 'MICHELDEVER TYRE SERVICES'
+	  when UPPER([extn consignee]) like '%NEON%UK%' then 'NEON UK'
+	  when UPPER([extn consignee]) like '%NIKE%' then 'NIKE RETAIL UK'
+	  when UPPER([extn consignee]) like '%NIPPON%EXPRESS%' then 'NIPPON EXPRESS (UK) LTD'
+	  when UPPER([extn consignee]) like '%NNR%GLOBAL%' then 'NNR GLOBAL LOGISTICS UK LIMITED'
+	  when UPPER([extn consignee]) like '%NOATUM%' then 'NOATUM LOGISTICS UK LIMITED'
+	  when UPPER([extn consignee]) like '%NORMAN%GLOBAL%' then 'NORMAN GLOBAL LOGISTICS LTD'
+	  when UPPER([extn consignee]) like '%NORTHWOOD%PAPER%SALES%' then 'NORTHWOOD PAPER SALES LTD'
+	  when UPPER([extn consignee]) like '%OAK%FURNITURELAND%' then 'OAK FURNITURELAND GROUP LIMITED'
+	  when UPPER([extn consignee]) like 'OGL%' then 'OGL FOOD TRADE'
+	  when UPPER([extn consignee]) like '%PACIFIC PRODUCE%' then 'PACIFIC PRODUCE LTD'
+	  when UPPER([extn consignee]) like '%FRESH%PRODUCE%CENTRE%'  then 'THE FRESH PRODUCE CENTRE'
+	  when UPPER([extn consignee]) like '%THINK%PRIME%'  then 'THINKPRIME'
+	  when UPPER([extn consignee]) like '%PARALLE%L%' then 'PARALLEL UK LTD'
+	  when UPPER([extn consignee]) like '%PERKINS%' then 'PERKINS ENGINES CO LTD'
+	  when UPPER([extn consignee]) like 'PFE%' then 'PFE EXPRESS LIMITED'
+	  when UPPER([extn consignee]) like 'PICKFORDS%' then 'PICKFORDS UK'
+	  when UPPER([extn consignee]) like 'PINNACLE%INTERNATIONAL%' then 'PINNACLE INTERNATIONAL FREIGHT LTD'
+	  when UPPER([extn consignee]) like '%PIRELLI%' then 'PIRELLI TYRES LIMITED'
+	  when UPPER([extn consignee]) like '%POUNDLAND%' then 'POUNDLAND LIMITED'
+	  when UPPER([extn consignee]) like '%PREMIER%FRUIT%' then 'PREMIER FRUIT & NUT LIMITED'
+	  when UPPER([extn consignee]) like '%PRINCES%FOODS%' or UPPER([extn consignee]) like '%PRINCES%L%T%D%' then 'PRINCES FOODS LTD'
+	  when UPPER([extn consignee]) like '%PROCT%R%GAMBLE%' or UPPER([extn consignee]) like '%PRINCES%L%T%D%' then 'PROCTER & GAMPLE PLC'
+	  when UPPER([extn consignee]) like '%PROFESSIONAL%FREIGHT%' then 'PROFESSIONAL FREIGHT SOLUTIONS'
+	  when UPPER([extn consignee]) like '%PUBLISHIP%' then 'PUBLISHIP UK LTD'
+	  when UPPER([extn consignee]) like '%RBF%CARGOCARE%LTD%' then 'RBF CARGOCARE LTD'
+	  when UPPER([extn consignee]) like '%RESIN%HANDLING%LTD%' then 'RESIN HANDLING SERVICES (UK) LTD'
+	  when UPPER([extn consignee]) like 'RHENUS%' then 'RHENUS LOGITICS LTD'
+	  when UPPER([extn consignee]) like '%RIF%WORLDWIDE%' then 'RIF WORLDWIDE PLC'
+	  when UPPER([extn consignee]) like '%ROHLIG%' then 'ROHLIG UK LTD'
+	  when UPPER([extn consignee]) like '%RUSH%GROUP%' then 'Rush Group Limited'
+	  when UPPER([extn consignee]) like '%SAINSBURY%' then 'SAINSBURY'
+	  when UPPER([extn consignee]) like '%SANITA%' then 'SANITA UK LTD'
+	  when UPPER([extn consignee]) like '%SANTA%FE%RELOCATION%' then 'SANTA FE RELOCATION'
+	  when UPPER([extn consignee]) like '%SAVIN%DEL%BENE%' then 'SAVINO DEL BENE - LONDON'
+	  when UPPER([extn consignee]) like '%SEKO%LOG%' or  UPPER([extn consignee]) like '%SEKO%WORLDWIDE%' then 'SEKO LOGISTICS'
+	  when UPPER([extn consignee]) like '%SENATOR%INT%' then 'SENATOR INTERNATIONAL FREIGHT'
+	  when UPPER([extn consignee]) like '%SHIPCO%' then 'SHIPCO TRANSPORT LTD'
+	  when UPPER([extn consignee]) like '%SIZANA%' then 'SIZANA LIMITED'
+	  when UPPER([extn consignee]) like '%SNETOR%' then 'SNETOR UK'
+	  when UPPER([extn consignee]) like '%STOLT%TANK%' then 'STOLT TANK CONTAINERS UK'
+	  when UPPER([extn consignee]) like '%STUDIO%RETAIL%' then 'STUDIO RETAIL LTD'  
+	  when UPPER([extn consignee]) like '%SUIDERLAND%' then 'SUIDERLAND PLASE UK'  
+	  when UPPER([extn consignee]) like '%SUMITOMO%' then 'SUMITOMO CORPORATION EUROPE LTD'  
+	  when UPPER([extn consignee]) like '%SUP%REME%FREIGHT%' then 'SUPREME FREIGHT SERVICES LTD'  
+	  when UPPER([extn consignee]) like 'T%L%SUGAR%' then 'T & L SUGARS LIMITED'  
+	  when UPPER([extn consignee]) like '%T%J%MORRIS%' then 'TJ MORRIS LTD'  
+	  when UPPER([extn consignee]) like '%TEES%LIMITED%' then 'TEES LTD'  
+	  when UPPER([extn consignee]) like 'TGC%UK%' then 'TGC UK'  
+	  when UPPER([extn consignee]) like '%THE%AVOCADO%COMPANY%' then 'THE AVOCADO COMPANY'  
+	  when UPPER([extn consignee]) like '%DISNEY%STORE%' then 'DISNEY STORE (UK) LTD'  
+	  when UPPER([extn consignee]) like '%TOLL%GLOBAL%' or  UPPER([extn consignee]) like '%TOLL%GLBOAL%' then 'TOLL GLOBAL LTD'  
+	  when UPPER([extn consignee]) like 'TRANS%GLOBAL%'  then 'TRANS GLOBAL FREIGHT MANAGEMENT'  
+	  when UPPER([extn consignee]) like 'TREK%UK%'  then 'TREK UK'  
+	  when UPPER([extn consignee]) like 'TRU%CAPE%FRUIT%MARKET%'  then 'TRU CAPEFRUIT MARKETING'  
+	  when UPPER([extn consignee]) like '%UNEEK%%'  then 'UNEEK GROUP' 
+	  when UPPER([extn consignee]) like '%UNIEXPRESS%'  then 'UNIEXPRESS' 
+	  when UPPER([extn consignee]) like '%UNISYSTEM%'  then 'UNISYSTEM' 
+	  when UPPER([extn consignee]) like '%VALE%EUROPE%LIMITED%'  then 'VALE EUROPE LIMITED' 
+	  when UPPER([extn consignee]) like '%VESTEL%HOLLAND%'  then 'VESTEL HOLLAND BV' 
+	  when UPPER([extn consignee]) like '%VESTEL%UK%'  then 'VESTEL UK LIMITED' 
+	  when UPPER([extn consignee]) like '%WEAL%MOOR%'  then 'WEALMOOR LTD' 
+	  when UPPER([extn consignee]) like '%WESTBOUND%'  then 'WESTBOUND LOGISTICS' 
+	  when UPPER([extn consignee]) like '%WESTBRIDGE%FOODS%'  then 'WESTBRIDGE FOODS LTD' 
+	  when UPPER([extn consignee]) like '%WESTROCK%PACKAGING%'  then 'WESTROCK PACKAGING' 
+	  when UPPER([extn consignee]) like '%W%M%MORRISION%'  then 'WM MORRISON' 
+	  when UPPER([extn consignee]) like 'WORLD%TRANSPORT%'  then 'WORLD TRANSPORT AGENCY' 
+	  when UPPER([extn consignee]) like 'ZAK%SHIPPING%'  then 'ZAK SHIPPING & LOGISTICS LTD' 
+	  when  UPPER([extn consignee]) like '%CURRYS%' OR UPPER([extn consignee]) like '%DSG RETAIL%' then 'CURRYS GROUP LIMITED'
+        when UPPER([extn consignee]) like 'SAMSUNG%' then 'SAMSUNG ELECTRONICS'
+        when UPPER([extn consignee]) like 'FLEXPORT%INTER%' then 'FLEXPORT INTERNATIONAL'
+        when UPPER([extn consignee]) like 'VESTEL%' then 'VESTEL UK LIMITED'
+ 	  when UPPER([extn consignee]) like '%GO%REEFERS%' then 'GO REEFERS UK LTD'
+	  when UPPER([extn consignee]) like '%KETER%' then 'KETER UK LTD'
+        else [extn consignee] end [consignee]
+      ,[extn clearing agent]
+	  ,[extn shipper] 
+	  ,[extn goods desc]
+	  ,[extn goods label]
+      ,[extn marks and numbers]
+      ,[num of cartons]
+      ,[total weight]
+      ,[total weight uom]
+      ,[total volume]
+      ,[extn ucd]
+      ,[extn unit tc]
+      ,[extn train operator]
+      ,[extn train destination]
+      ,[extn tc trans temp]
+      ,[extn unit agent]
+      ,[extn dangerous goods]
+      ,[extn load desc]
+      ,[extn tos no]
+      ,[extn tranship status]	  
+	  ,[type]
+	  ,[port] 
+      ,[box_type]
+	----  ,[SERVICE]
+   ----   ,[LINE]  
+	  ,[TEU]
+  into [test_environment].[dbo].[src_um]  
+  FROM [test_environment].[dbo].[um10];
+ 
+
+
+ select * from [test_environment].[dbo].[src_um]  
+ ;

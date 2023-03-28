@@ -1,0 +1,21 @@
+select UPPER(consignee) CONSIGNEE, 
+sum (case when upper(line) = 'MSC' and upper(service) = 'LEV'then 1 else 0 end) msc_Lev_count,
+sum (case when upper(service) = 'LEV' then 1 else 0 end) levant_count,
+count(*) box_count
+from [Project_Insights].[dbo].[src_unit_movement]  
+where convert (date,[actual shipment date]) between '2022-01-01' and '2022-12-31'
+and port = 'LONDON GATEWAY'
+and lower (consignee) like '%keter%' 
+group by consignee
+
+
+
+select UPPER(consignee) CONSIGNEE, 
+count(*) box_count,
+sum (case when port = 'LONDON GATEWAY' then 1 else 0 end) London_Gateway,
+sum (case when port != 'LONDON GATEWAY' then 1 else 0 end) Southampton
+from [Project_Insights].[dbo].[src_unit_movement]  
+where convert (date,[actual shipment date]) between '2022-01-01' and '2022-12-31'
+and consignee is not null  ----and lower(service) in ('AEGEAN')----('lev','levant')
+group by consignee
+order by count (*) desc 

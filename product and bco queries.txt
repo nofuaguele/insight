@@ -1,0 +1,37 @@
+ select distinct consignee
+from [Project_Insights].[dbo].[src_unit_movement]  
+where convert (date,[actual shipment date]) between '2022-01-01' and '2022-08-31'
+and  lower(consignee) like '%real%peanut%' ;
+
+
+---product check
+select *
+from [Project_Insights].[dbo].[src_unit_movement]  
+where convert (date,[actual shipment date]) between '2022-01-01' and '2022-08-31'
+and  lower(consignee) like '%real%peanut%';
+
+
+
+
+select PORT,LINE,count(*) BOX_COUNT
+from [Project_Insights].[dbo].[src_unit_movement]  
+where convert (date,[actual shipment date]) between '2022-01-01' and '2022-08-31'
+and  lower(consignee) like '%tgc%'
+group by port,line 
+ORDER BY PORT, BOX_COUNT DESC ;
+
+
+select PORT,SERVICE,count(*) BOX_COUNT
+from [Project_Insights].[dbo].[src_unit_movement]  
+where convert (date,[actual shipment date]) between '2022-01-01' and '2022-08-31'
+and  lower(consignee) like '%tgc%'
+group by port,SERVICE 
+ORDER BY PORT, BOX_COUNT DESC ;
+
+
+
+
+
+
+
+

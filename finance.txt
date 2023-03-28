@@ -1,0 +1,117 @@
+/****** Script for SelectTopNRows command from SSMS  ******/
+with a  as
+(----SELECT * FROM [test_environment].[dbo].[dpws_tier]
+
+----union all 
+SELECT  * FROM [test_environment].[dbo].[dpws_tier_2])
+
+select * 
+into [test_environment].[dbo].[src_dpws_tier]
+from a ;
+
+
+-----drop table [test_environment].[dbo].[src_dpws_tier]
+
+
+SELECT  * FROM [test_environment].[dbo].[dpws_tier_2]
+
+
+select * from 
+(select a.*,
+case when UPPER(oper) in ('HL','YM') then 'Full Charge    £ 35 / TEU per day from April 2022'
+     when UPPER(oper) = 'HM' then 'Side Agreement- charge £ 25.72 / TEU per day from April 2022'
+	 when UPPER(oper) = 'ON' then 'Side Agreement - Full Charge £ 35 / TEU per day from November 2022'
+	 else 'NA' end Note
+from [test_environment].[dbo].[src_dpws_tier] a
+where (transhipment = 'Y' or EI = 'E')
+and StackDwell >= 22 ) a
+where UPPER(a.oper) in ('HL','YM','HM') 
+
+union all
+
+select * from 
+(select a.*,
+case when UPPER(oper) in ('HL','YM') then 'Full Charge    £ 35 / TEU per day from April 2022'
+     when UPPER(oper) = 'HM' then 'Side Agreement- charge £ 25.72 / TEU per day from April 2022'
+	 when UPPER(oper) = 'ON' then 'Side Agreement - Full Charge £ 35 / TEU per day from November 2022'
+	 else 'NA' end Note
+from [test_environment].[dbo].[src_dpws_tier] a
+where (transhipment = 'Y' or EI = 'E')
+and StackDwell >= 22 ) a
+where UPPER(a.oper) in ('ON') 
+
+order by oper , StackDwell desc
+
+
+
+min (arrival) where EI = 'I'
+min (departure) where EI = 'E'
+
+
+select  [InvoiceNumber]
+      ,[EI]
+      ,[ContainerNumber]
+      ,[ChargeDate]
+      ,[ChargeType]
+      ,[ChargeDescription]
+      ,[Days]
+      ,[ChargeRate]
+      ,[ChargeValue]
+      ,[Oper]
+      ,[Voyage]
+      ,[Status]
+      ,[SizeType]
+      ,[VehicleType]
+      ,[Arrival]
+      ,[Departure]
+      ,[StackDwell]
+      ,[Transhipment]
+	  , count(*)
+from  [test_environment].[dbo].[src_dpws_tier]
+where (transhipment = 'Y' or EI = 'E')
+and StackDwell >= 22 
+group by [InvoiceNumber]
+      ,[EI]
+      ,[ContainerNumber]
+      ,[ChargeDate]
+      ,[ChargeType]
+      ,[ChargeDescription]
+      ,[Days]
+      ,[ChargeRate]
+      ,[ChargeValue]
+      ,[Oper]
+      ,[Voyage]
+      ,[Status]
+      ,[SizeType]
+      ,[VehicleType]
+      ,[Arrival]
+      ,[Departure]
+      ,[StackDwell]
+      ,[Transhipment]
+
+	  having count (*) > 1
+
+	  select  [InvoiceNumber]
+      ,[EI]
+      ,[ContainerNumber]
+      ,[ChargeDate]
+      ,[ChargeType]
+      ,[ChargeDescription]
+      ,[Days]
+      ,[ChargeRate]
+      ,[ChargeValue]
+      ,[Oper]
+      ,[Voyage]
+      ,[Status]
+      ,[SizeType]
+      ,[VehicleType]
+      ,[Load/Discharge]
+      ,[Gate In/Out]
+      ,[StackDwell]
+      ,[Transhipment]
+from  [test_environment].[dbo].[src_dpws_tier]
+where (transhipment = 'Y' or EI = 'E')
+and StackDwell >= 22 
+---and [ContainerNumber] = 'FANU1167869' 
+and oper = 'HM'
+order by days desc

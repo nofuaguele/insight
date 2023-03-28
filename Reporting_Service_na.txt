@@ -1,0 +1,9 @@
+
+RDP (Click start, type remote, and click on remote desktop connection, use your normal login credentials) to LGWjumpbox2 
+
+
+go to this link:
+
+https://reporting.prodint.cnsonline.co.uk/Reports/report/DPW_BA/Unit%20Movement
+
+Reach out james wrigley or kieron clifford for password reset if you cannot connect 

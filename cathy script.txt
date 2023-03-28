@@ -1,0 +1,111 @@
+
+select 
+ [InvoiceNumber]
+      ,[EI]
+      ,[ContainerNumber]
+      ,[ChargeDate]
+      ,[ChargeType]
+      ,[ChargeDescription]
+      ,[Days]
+	  ,days - 7  chargeable_days_35_pounds
+      ,(days - 7 ) * 9.28 additonal_charge_value
+      ,[ChargeRate]
+      ,[ChargeValue]
+      ,[Oper]
+      ,[Voyage]
+      ,[Status]
+      ,[SizeType]
+      ,[VehicleType]
+      ,[Load/Discharge]
+      ,[Gate In/Out]
+      ,[StackDwell]
+      ,[Transhipment]
+	into [test_environment].[dbo].[src_dpws_tier_ON_export20]
+from  [test_environment].[dbo].[src_dpws_tier] a
+where (EI = 'E' or ( EI = 'I' and Transhipment = 'Y' ) )
+and  UPPER(a.oper) in ('ON') 
+and ChargeDescription like '%20%'
+and ChargeRate  = 25.72
+and Days > 7
+
+
+(EI = 'E' or ( EI = 'I' and Transhipment = 'Y' ) )
+ EI = 'I'  and  Transhipment = 'N'
+
+
+select *
+from  [test_environment].[dbo].[src_dpws_tier] a
+where (EI = 'E' or ( EI = 'I' and Transhipment = 'Y' ) )
+and  UPPER(a.oper) in ('ON') 
+and ChargeDescription like '%20%'
+and ChargeRate  = 25.72
+and Days > 7
+
+
+
+
+
+
+select 
+       [InvoiceNumber]
+      ,[EI]
+      ,[ContainerNumber]
+      ,[ChargeDate]
+      ,[ChargeType]
+      ,[ChargeDescription]
+      ,[Days]
+      ,[ChargeRate]
+      ,[ChargeValue]
+	  ,[real_charge_value]
+	  ,case when [real_charge_value] < [ChargeValue] then [ChargeValue] - [real_charge_value]
+	         else 0 end credit
+
+	   , case when [real_charge_value] > [ChargeValue] then  [real_charge_value] -[ChargeValue]
+	         else 0 end debit 
+      ,[Oper]
+      ,[Voyage]
+      ,[Status]
+      ,[SizeType]
+      ,[VehicleType]
+      ,[Load/Discharge]
+      ,[Gate In/Out]
+      ,[StackDwell]
+      ,[Transhipment]
+ ----into   [test_environment].[dbo].[src_dpws_tier_ON_import45]
+
+from 
+(select 
+       [InvoiceNumber]
+      ,[EI]
+      ,[ContainerNumber]
+      ,[ChargeDate]
+      ,[ChargeType]
+      ,[ChargeDescription]
+      ,[Days]
+      ,[ChargeRate]
+      ,[ChargeValue]
+	  ,case when days <=7  then 28.94 * days 
+	        when days > 7  then (28.94 * 12)  +  (78.75 * (days -12)) 
+			else 0 end [real_charge_value]
+      ,[Oper]
+      ,[Voyage]
+      ,[Status]
+      ,[SizeType]
+      ,[VehicleType]
+      ,[Load/Discharge]
+      ,[Gate In/Out]
+      ,[StackDwell]
+      ,[Transhipment]
+from  [test_environment].[dbo].[src_dpws_tier] a
+where (EI = 'E' or ( EI = 'I' and Transhipment = 'Y' ) )
+and  UPPER(a.oper) in ('ON') 
+and ChargeDescription like '%45%'
+and ChargeRate  = 57.88 )  a
+
+
+
+
+
+
+
+

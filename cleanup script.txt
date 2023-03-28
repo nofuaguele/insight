@@ -1,4 +1,4 @@
-/****** create a back up before dropping the table  ******/
+/****** create a back up before dropping the table. very important  ******/
 --- drop table [unit_movement].[dbo].[unit_movement_backup]
 
   select * 
